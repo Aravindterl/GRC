@@ -1,0 +1,181 @@
+/* src/Login.css */
+body {
+    font-family: 'Arial', sans-serif;
+    /* margin: 50; */
+    /* display: flex; */
+    flex: 1;
+    /* align-items: center; */
+    /* justify-content: center; */
+    height: 700px;
+    /* background: url('./network_security.jpg'); */
+  }
+  .image-container{
+    height: 700px;
+    width: 900px;
+    background-color: #007bff;
+    background: url('./LoginIm.jpg');
+    background-repeat: no-repeat;
+    margin-top: 40px;
+    border-radius:15px;
+    /* background-size: contain; */
+  }
+  .main-login-container{
+    border: 5px black;
+    height: 550px;
+    width: 500px;
+    margin-left: 960px;
+    margin-top: -900px;
+    background-color: #007bff;
+    border: 2px black;
+  }
+  .container{
+    height: 700px;
+  }
+  .otp-box {
+    margin-top:-5px;    
+  }
+  .forgot-password{
+    font-size: 14px;
+    color:#007bff;
+    margin-bottom: 12px;
+    font-weight: 300;
+    display: flex;
+    width: 110px;
+    height: 20px;
+    border-radius: 5px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  .otp-input {
+    padding: 9px;
+    width: 200px;
+    margin-right: 5px;
+    margin-top: 5px;
+  }
+  .sidebar {
+    width: 0;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+  }
+  
+  .sidebar.open {
+    width: 250px;
+  }
+  
+  .sidebar button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+  
+  .zoom-container {
+    position: relative;
+  }
+  
+  .additional-content {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 20px;
+    /* Additional styling for your content */
+  }
+  
+  .verify-button {
+    padding: 8px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    margin-top: 5px;
+    cursor: pointer;
+    width: 100px;
+    margin-left: 105px;
+  }
+  .login-container {
+    background-color:lightgray;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 290px;
+    width: 250px;
+    margin-left: 1050px;
+    margin-top: -640px;
+  }
+  .googlebox{
+    background-color:lightgray;
+    height: 45px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 1050px;
+    margin-top: 20px;
+    width: 310px;
+    text-align: center;
+  }
+  .facebookbox{
+    background-color:lightgray;
+    height: 45px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: 1050px;
+    margin-top: 10px;
+    width: 310px;
+    text-align: center;
+  }
+  .input-conatainer{
+    align-items: center;
+    margin-right: 10px;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 26px;
+    border: 1px solid green;
+    border-radius: 4px;
+
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border:none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .Button{
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
