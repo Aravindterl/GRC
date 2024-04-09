@@ -1,13 +1,16 @@
-import React, { useState} from 'react';
-import { useHistory } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect} from 'react';
+// import { useHistory } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import './login.css';
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa6";
+import { Bars ,RotatingLines} from 'react-loader-spinner';
+import Config from '../Config';
 
-const Login = () => {
+const Login = ({onLogin}) => {
   // const history = useHistory();
   const navigate = useNavigate();
+
   const [email, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [postData, setPostData] = useState({ email: '', password: '',});
@@ -16,12 +19,15 @@ const Login = () => {
   const [code,setcode] = useState('');
   const [userid,setUserid] = useState('');
   const [PostOtpData, setPostotpData] = useState({userid:'',code:''});
-  const [otpres,setotpres] = useState(null);
+  const [otpres,setotpres] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
+
     if (email && password) {
+      setIsLoading(true);
       // Successful login (you can redirect the user or perform other actions)
-      const response = await fetch(`http://localhost:5145/api/userLogin`, {
+      const response = await fetch(`${Config.apiBaseUrl}/api/userLogin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,6 +37,7 @@ const Login = () => {
       });
 
       const data = await response.json();
+      setIsLoading(false);
       setResponseData(data);
       setUserid(data.userid);
       console.log('MFA Sent Success');
@@ -65,8 +72,10 @@ const Login = () => {
     // After verifying OTP, you can handle the result as needed
     
     if (code) {
+      setIsLoading(true);
       // Successful login (you can redirect the user or perform other actions)
-      const response = await fetch(`http://localhost:5145/api/userAuthentication`, {
+      try{      
+      const response = await fetch(`${Config.apiBaseUrl}/api/userAuthentication`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,24 +83,47 @@ const Login = () => {
         },
         body: JSON.stringify(PostOtpData),
       });
-
       const data = await response.json();
-      setotpres(data.message);
-      console.log('Login successful');
-      if(otpres === ' User Authenticated Successfully...!'){
-        navigate('/sidenav');
-        // return <Navigate to="/" replace/>;
+      if(response.ok){
+          
+          if(data != null){
+            if(data.message != null){
+              setotpres(data);
+            }
+            setotpres(data);
+            sessionStorage.setItem('customerid',data.customerId)
+            sessionStorage.setItem('Token',data.authenticationToken)
+            sessionStorage.setItem('name', data.username);
+            sessionStorage.setItem('sysRoleId', data.sysRoleId);
+            sessionStorage.setItem('userId', data.userId);           
+          }
       }
       setError('');
+    }catch(error) {
+        setError('An error occurred while verifying OTP');
+      } finally {
+        // Hide loader
+      }
     } else {
       setError('Please enter OTP');
     }
   };
 
+  useEffect(() => {
+    if (otpres.message === ' User Authenticated Successfully...!') {
+      setTimeout(() => {
+        setIsLoading(false); 
+        navigate(`/home`);
+        sessionStorage.setItem('isSystemAdmin', otpres.isSystemAdmin);
+        sessionStorage.setItem('isClientAdmin', otpres.isClientAdmin);
+        onLogin();
+      }, 3000);
+    }
+  }, [otpres , navigate , onLogin]);
+
   return (
     <div className='container'>
         <div className='image-container'>
-{/* //className='main-login-container' */}
         </div>
         <div style={{marginTop:'10px'}} >
           <div className='login-container'>
@@ -131,11 +163,28 @@ const Login = () => {
                         />
                       </label>
                       <button className="verify-button" onClick={handleVerifyOtp}>
-                        Verify OTP
+                       {isLoading ? <span><Bars
+                                            height="15"
+                                            width="15"
+                                            color="white"
+                                            ariaLabel="bars-loading"
+                                            wrapperStyle={{}}
+                                            wrapperClass=""
+                                            visible={true}
+                                            /></span> : <span>Verify OTP</span>}
                       </button>
-                    </div>):<button onClick={handleLogin} style={{width:'190px',marginTop:'15px',marginLeft:'30px'}}>Login</button>}
-                {otpres &&  <p style={{ color: 'green',fontSize:'20px',marginLeft:'1px',marginTop:'15px' }}>{otpres}</p> }
-                {/* {responseData && <p style={{ color: 'green',fontSize:'20px',marginLeft:'1px',marginTop:'15px' }}>{responseData}</p>} */}
+                    </div>):<button onClick={handleLogin} style={{width:'190px',marginTop:'15px',marginLeft:'30px'}}>{isLoading ? <RotatingLines
+                                                                                                                                    visible={true}
+                                                                                                                                    height="20"
+                                                                                                                                    width="20"
+                                                                                                                                    color="grey"
+                                                                                                                                    strokeColor='white'
+                                                                                                                                    strokeWidth="5"
+                                                                                                                                    animationDuration="0.75"
+                                                                                                                                    ariaLabel="rotating-lines-loading"
+                                                                                                                                    wrapperStyle={{}}
+                                                                                                                                    wrapperClass=""
+                                                                                                                                    />: <span>Login</span>}</button>}
             </div>
             <div style={{marginLeft:'1190px',marginTop:'15px'}}>
                  (Or) 
