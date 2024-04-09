@@ -1,38 +1,34 @@
-import React, { useState } from 'react';
-import ReactImageZoom from 'react-image-zoom';
-import './login.css';
+import React from 'react';
+// import { motion } from 'framer-motion';
 
-const ZoomableImage = ({ images }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isZoomed, setIsZoomed] = useState(false);
+// const Circle = ({ content, id, onClick }) => {
+//   return (
+//     <motion.div
+//       layoutId={id}
+//       initial={{ scale: 1 }}
+//       whileHover={{ scale: 1.1 }}
+//       whileTap={{ scale: 0.9 }}
+//       onClick={() => onClick(id)}
+//       className="circle"
+//     >
+//       {'Hello Darling'}
+//     </motion.div>
+//   );
+// };
 
-  const zoomProps = {
-    width: 400,
-    height: 400,
-    zoomWidth: 800,
-    img: images[currentIndex],
+// export default Circle;
+const CircleComponent = ({ id, content, isSelected, onSelect }) => {
+  const handleClick = () => {
+    onSelect(id);
   };
 
-  const nextImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    setIsZoomed(false); // Reset zoom when changing images
-  };
+  const circleClass = `circle ${isSelected ? 'selected' : ''}`;
 
   return (
-    <div className={`zoom-container ${isZoomed ? 'zoomed' : ''}`}>
-      <ReactImageZoom {...zoomProps} />
-      {isZoomed && (
-        <div className="additional-content">
-          {/* Add your additional content here */}
-          <p>Additional Information</p>
-        </div>
-      )}
-      <button onClick={() => setIsZoomed(!isZoomed)}>
-        {isZoomed ? 'Zoom Out' : 'Zoom In'}
-      </button>
-      <button onClick={nextImage}>Next Image</button>
+    <div className={circleClass} onClick={handleClick}>
+      <span className="circle-text">{content}</span>
     </div>
   );
 };
 
-export default ZoomableImage;
+export default CircleComponent;

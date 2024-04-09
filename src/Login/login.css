@@ -17,6 +17,7 @@ body {
     background-repeat: no-repeat;
     margin-top: 40px;
     border-radius:15px;
+    margin-left: 25px;
     /* background-size: contain; */
   }
   .main-login-container{
@@ -97,6 +98,9 @@ body {
     cursor: pointer;
     width: 100px;
     margin-left: 105px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .login-container {
     background-color:lightgray;
@@ -178,4 +182,203 @@ body {
     text-align: center;
     margin-top: 10px;
   }
-  
+/* App.css */
+.scale-of-universe {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scale-of-universe h1 {
+  text-align: center;
+  color: #333;
+}
+
+.universe {
+  width: 800px; /* Adjust as needed */
+  height: 800px; /* Adjust as needed */
+  border: 2px solid #000; /* For visualization, remove in production */
+  overflow: hidden;
+  transition: transform 0.5s ease-in; /* Smooth transition when zooming */
+}
+
+.earth {
+  position: absolute;
+  width: 700px; /* Adjust as needed */
+  height: 700px; /* Adjust as needed */
+  background-color: green; /* For visualization, remove in production */
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.ball {
+  position: absolute;
+  width: 400px; /* Adjust as needed */
+  height: 400px; /* Adjust as needed */
+  background-color: red; /* For visualization, remove in production */
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.blackball{
+  position: absolute;
+  width: 100px; /* Adjust as needed */
+  height: 100px; /* Adjust as needed */
+  background-color: black; /* For visualization, remove in production */
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.yellowball{
+  position: absolute;
+  width: 50px; /* Adjust as needed */
+  height: 50px; /* Adjust as needed */
+  background-color: yellow; /* For visualization, remove in production */
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} 
+.whiteball{
+  position: absolute;
+  width: 10px; /* Adjust as needed */
+  height: 10px; /* Adjust as needed */
+  background-color:white; /* For visualization, remove in production */
+  border-radius: 70%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} 
+.pinkball{
+  position: absolute;
+  width: 5px; /* Adjust as needed */
+  height: 5px; /* Adjust as needed */
+  background-color:pink; /* For visualization, remove in production */
+  border-radius: 70%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-55%, -60%);
+} 
+.mobile-container {
+  width: 100%;
+  height: 100vh; /* 100% viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent black background */
+}
+
+.iphone-frame-container {
+  position: relative;
+  width: 320px; /* Width of your iPhone frame image */
+  height: 660px; /* Height of your iPhone frame image */
+  margin-top:50px;
+  margin-left: 90px;
+  overflow: hidden; 
+  /* background-color: #007bff; */
+}
+
+.iphone-frame {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  z-index: 1; /* The frame should be above the content */
+}
+
+.content-inside-frame {
+  position: absolute;
+  top: 16%; /* Adjust to fit the content area within your frame */
+  left: 5%; /* Adjust to fit the content area within your frame */
+  right: 5%; /* Adjust to maintain padding on the right */
+  bottom: 10%; /* Adjust to fit the content area within your frame */
+  overflow-y: auto; /* Allows vertical scrolling */
+  z-index: 2; /* Content needs to be above the background/frame image */
+  /* Apply your own styles for content */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  /* Hides scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+.header{
+  height: 50px;
+  background-color: #4caf50;
+  z-index: 1;
+  top: 10%; /* Adjust to fit the content area within your frame */
+  left: 5%; /* Adjust to fit the content area within your frame */
+  right: 5%; 
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+}
+.contentoffrmae{
+  height: auto;
+  width: 100%;
+  background-color: aqua;
+}
+
+.scalecontainer{
+  position: relative;
+  width: 100%; /* Full width of the parent element */
+  height: 100vh; /* Full height of the viewport */
+  display: flex;
+  justify-content: center; /* Center circles horizontally */
+  align-items: center; /* Center circles vertically */
+  flex-wrap: wrap; /* Wrap circles if needed */
+  gap: 10px; /* Space between circles */
+  background-color: #000051; /* Dark blue background */
+  overflow: hidden; /* Ensures nothing goes outside the bounds */
+}
+
+/* Individual circle styling */
+.circle {
+  flex: 0 0 auto; /* Do not grow or shrink */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #303f9f; /* Circle background color */
+  color: white;
+  cursor: pointer;
+  transition: transform 0.3s ease, z-index 0s; /* Smooth transition for zoom effect */
+  z-index: 1; /* Default stacking order */
+  width: 50px; /* Default width */
+  height: 50px; /* Default height */
+  margin: 5px; /* Space around circles */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+  user-select: none; /* Prevent text selection */
+}
+
+/* Text inside the circle */
+.circle-text {
+  text-align: center;
+  font-size: 16px; /* Adjust as needed */
+  font-weight: bold;
+}
+
+/* Style for the circle when it's selected (zoomed-in) */
+.circle.selected {
+  transform: scale(3); /* Adjust scale to your preference */
+  z-index: 2; /* Bring to the front */
+  transition-delay: 0s; /* Apply the z-index immediately */
+}
+
+/* Adjust circle sizes for responsiveness */
+@media (max-width: 768px) {
+  .circle {
+    width: 40px; /* Smaller width for mobile */
+    height: 40px; /* Smaller height for mobile */
+  }
+  .circle.selected {
+    transform: scale(2); /* Smaller scale for mobile devices */
+  }
+}
