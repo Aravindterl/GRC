@@ -106,7 +106,7 @@ const Sidebar = ({isOpen ,toggleSidebar}) => {
                    <div className='submenuMaster' ref={submenuRef}>
                    <Link  to='createcompliance'>Create Compliance Period</Link>
                    <Link  to='viewcompliance'>View / Edit Complaince</Link>
-                   <Link  to='activity'>CreateAssignments</Link>
+                   <Link  to='createassignments'>CreateAssignments</Link>
                    <Link  to='assignment'>History</Link>
               </div>
                 ):''}
@@ -142,7 +142,7 @@ const Sidebar = ({isOpen ,toggleSidebar}) => {
           </div>
               <ul className={`sidemenubar ${isOpen ? 'open' : ''}`}>
                 <li><Link to='clientmanagement' style={{textDecoration:'none',display:'inline-flex'}} onClick={toggleisGovarOpen} >{isGovarOpen ? <MdKeyboardArrowDown size={20}/> :  <MdKeyboardArrowRight size={20}/>}&nbsp;Governance</Link></li>
-                <li><Link to='knowledgemanagement' style={{textDecoration:'none',display:'inline-flex'}} className='knowledgemanagement' onClick={toggleArrow} > {isKnowledgeOpen ? (<MdKeyboardArrowDown size={20}/>) : (<MdKeyboardArrowRight size={20}/>)} &nbsp;Activity Management</Link></li>
+                <li><Link to='assignment' style={{textDecoration:'none',display:'inline-flex'}} className='knowledgemanagement' onClick={toggleArrow} > {isKnowledgeOpen ? (<MdKeyboardArrowDown size={20}/>) : (<MdKeyboardArrowRight size={20}/>)} &nbsp;Activity Management</Link></li>
                 <li><Link to='helpcontent' style={{textDecoration:'none',display:'inline-flex'}} onClick={toggleishelpOpen}> {isHelpOpen ? (<MdKeyboardArrowDown size={20}/>) : (<MdKeyboardArrowRight size={20}/>)} &nbsp;Help Content</Link></li>
             </ul></span>)}
             <div className='helpbox'>

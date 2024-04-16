@@ -27,18 +27,22 @@ const RoleMaster = ({isOpen}) =>{
         roleName: '',
         description: '',
         comments:'',        
-        createdBy:1,
+        createdBy:'',
         active:'',
-        CustomerId:10,
+        CustomerId:'',
       });
-    
+  
       const handleChange =(isEdit) => (e) => {
         const { name, value } = e.target;
+        let updatedValue = value;
+        if(name === "active"){
+          updatedValue = value === "true" ? true : false;
+        }
         if(isEdit){
             setEditedItem(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
             }
@@ -46,7 +50,7 @@ const RoleMaster = ({isOpen}) =>{
             setFormData(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
             }
@@ -55,13 +59,18 @@ const RoleMaster = ({isOpen}) =>{
       const handleSubmit = async (e) => {
         e.preventDefault();
         setIsClickadd(false);
-        console.log(formData)
+        const AddingColumn = {
+          ...formData,
+          CustomerId: parseInt(sessionStorage.getItem('customerid')), // Modify this to your specific needs
+          createdBy : parseInt(sessionStorage.getItem('userid'))
+        }
+        console.log(AddingColumn)
         await fetch(`${Config.apiBaseUrl}/api/RoleMaster`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(AddingColumn)
         })
         .then(response => response.json())
         .then(data => {
@@ -70,7 +79,8 @@ const RoleMaster = ({isOpen}) =>{
 
           setTimeout(() => {
             setShowPopup(false);
-          }, 54000);
+            window.location.reload();
+          }, 4000);
           console.log('Success:', data.message);
         })
         .catch(error => {
@@ -82,7 +92,8 @@ const RoleMaster = ({isOpen}) =>{
 
         const editedItemWithExtraColumn = {
           ...editedItem,
-          CustomerId: '10' // Modify this to your specific needs
+          CustomerId: parseInt(sessionStorage.getItem('customerid')), // Modify this to your specific needs
+          createdBy : parseInt(sessionStorage.getItem('userid'))
         };
         console.log(editedItemWithExtraColumn)
 
@@ -162,6 +173,7 @@ const RoleMaster = ({isOpen}) =>{
       };
       const togglepopup = () => {
         setShowPopup(false);
+        window.location.reload();
       };
      
     return(
@@ -194,7 +206,7 @@ const RoleMaster = ({isOpen}) =>{
                         <td>{item.roleName}</td>
                         <td>{item.description}</td>
                         <td>{item.comments}</td>
-                        <td>{item.active}</td>
+                        <td>{item.active === true ? "Yes" : "No"}</td>
                         <td><FiEdit onClick={() => handleEdit(item)} size={15} style={{cursor:'pointer',marginRight:'10px',marginLeft:'10px'}}/>   <MdDeleteForever size={20} style={{cursor:'pointer',color:'red',marginLeft:'10px'}}  onClick={() => handleDelete(item.sysRoleId)}/></td>
                         </tr>
                     ))}
@@ -242,10 +254,10 @@ const RoleMaster = ({isOpen}) =>{
                             <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'100px',fontSize:'17px',fontWeight:'700'}}> Disable :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="Y" style={{marginLeft:'140px'}} onChange={handleChange(false)}/>YES
+                                    <input type="radio" name="active" value="true" style={{marginLeft:'140px'}} onChange={handleChange(false)}/>YES
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="N" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>NO
+                                    <input type="radio" name="active" value="false" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>NO
                                 </label>
                             </div>
                         <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'270px'}}>Submit</button>
@@ -291,10 +303,10 @@ const RoleMaster = ({isOpen}) =>{
                             <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'100px',fontSize:'17px',fontWeight:'700'}}> Disable :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="Y" checked={editedItem.active === 'Y'} style={{marginLeft:'140px'}} onChange={handleChange(true)}/>YES
+                                    <input type="radio" name="active" value="true" checked={editedItem.active === true} style={{marginLeft:'140px'}} onChange={handleChange(true)}/>YES
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="N" checked={editedItem.active === 'N'} style={{marginLeft:'30px'}} onChange={handleChange(true)}/>NO
+                                    <input type="radio" name="active" value="false" checked={editedItem.active === false} style={{marginLeft:'30px'}} onChange={handleChange(true)}/>NO
                                 </label>
                             </div>
                         <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'270px'}}>Submit</button>

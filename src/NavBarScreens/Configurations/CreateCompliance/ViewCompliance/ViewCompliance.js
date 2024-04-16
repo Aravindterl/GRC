@@ -18,6 +18,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
     //const [options, setOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState();
     const [showPopup, setShowPopup] = useState(false);
+
     const [message, setmessage] = useState('');
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -145,7 +146,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
       };
 
     useEffect(() => {
-        fetch(`${Config.apiBaseUrl}/api/CompliancePeriod?CustomerId=9`)
+        fetch(`${Config.apiBaseUrl}/api/CompliancePeriod?CustomerId=${parseInt(sessionStorage.getItem('customerid'))}`)
           .then(response => response.json())
           .then(data => setData(data.data),console.log(data))
           .catch(error => console.error('Error fetching data:', error));
@@ -200,7 +201,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
                         <td>{item.standardname}</td>
                         <td>{item.complStartDate}</td>
                         <td>{item.complEndDate}</td>
-                        <td>{item.metCompliance === true ? "Open" : "Close"}</td>
+                        <td>{item.isOpen === true ? "Open" : "Close"}</td>
                         <td>{item.isActive === true ? "Yes" : "No"}</td>
                         {/* <td>{item.disable}</td> */}
                         {/* <MdDeleteForever size={20} style={{cursor:'pointer',color:'red',marginLeft:'10px'}}  onClick={() => handleDelete(item.id)}/> */}

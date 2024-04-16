@@ -80,7 +80,7 @@ function ResetPassword() {
         </div>
         <button type="submit" className='resetpasswordbutton'>Reset Password</button>
       </form>
-      {message == 'Passwords do not match' ? <p style={{color:'red'}}>{message}</p> : <p style={{color:'green'}}>{message}</p> }
+      {message === 'Passwords do not match' ? <p style={{color:'red'}}>{message}</p> : <p style={{color:'green'}}>{message}</p> }
     </div>
   );
 };

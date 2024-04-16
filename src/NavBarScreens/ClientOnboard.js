@@ -40,13 +40,14 @@ const ClientOnboard = ({isOpen}) =>{
         isActive:true
       });
     //   = (name) => (e) => 
-      const handleChange =(isEdit) => (e) => {
+      const handleChange = (isEdit) => (e) => {
         const { name, value } = e.target;
         let updatedValue = value;
         if(name === "isActive"){
           updatedValue = value === "true" ? true : false;
         }
-            if(isEdit){              
+    
+         if(isEdit){              
             setEditedItem(prevState => {
                 return {
                   ...prevState,
@@ -82,8 +83,7 @@ const ClientOnboard = ({isOpen}) =>{
                   [name]: parseInt(value)
                 };
               });
-        }
-      
+        }      
       };
 
       const handleSubmit = (e) => {
@@ -118,9 +118,21 @@ const ClientOnboard = ({isOpen}) =>{
         }
       };
 
+      const removeItem = (keyToRemove) => {
+        const updatedEditedItem = { ...editedItem };
+        delete updatedEditedItem[keyToRemove];
+        setEditedItem(null);
+        setEditedItem(updatedEditedItem);
+      };
+      
+
       const handleSave = () => {
+      
+        removeItem('customerName');
+        removeItem('createdBy');
+        removeItem('createdDateTime');
         console.log(editedItem)
-        fetch(`${Config.apiBaseUrl}/api/CustomerMaster`, {
+        fetch(`${Config.apiBaseUrl}/api/CustomerMaster?CustomerId=${editedItem.customerId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -129,7 +141,7 @@ const ClientOnboard = ({isOpen}) =>{
         })
         .then(response => {
           if (response.ok) {
-            const newData = data.map(item => (item.id === editedItem.roleId ? editedItem : item));
+            const newData = data.map(item => (item.customerId === editedItem.customerId ? editedItem : item));
             setData(newData);
             setSelectedItem(null);
             setEditedItem(null);
@@ -157,6 +169,7 @@ const ClientOnboard = ({isOpen}) =>{
       const handleEdit = (item) => {
         setSelectedItem(item);
         setEditedItem({ ...item });
+       
       };
 
       useEffect(() => {
@@ -173,12 +186,12 @@ const ClientOnboard = ({isOpen}) =>{
         fetchData();
     }, [data]);
 
-      useEffect(() => {
-        fetch('${Config.apiBaseUrl}/api/LookUp/CountryMasterlookup')
-          .then(response => response.json())
-          .then(data => setroleData(data))
-          .catch(error => console.error('Error fetching data:', error));
-      }, []);
+      // useEffect(() => {
+      //   fetch('${Config.apiBaseUrl}/api/LookUp/CountryMasterlookup')
+      //     .then(response => response.json())
+      //     .then(data => setroleData(data))
+      //     .catch(error => console.error('Error fetching data:', error));
+      // }, []);
 
       const toggleArrow = () => {
         setIsClickadd(!IsClickadd);       
@@ -222,7 +235,7 @@ const ClientOnboard = ({isOpen}) =>{
                     </thead>
                     <tbody>
                     {currentItems.map(item => (
-                        <tr key={item.id}>
+                        <tr key={item.customerId}>
                         <td>{item.customerName}</td>
                         <td>{item.city}</td>
                         <td>{item.street}</td>
@@ -297,7 +310,7 @@ const ClientOnboard = ({isOpen}) =>{
                               <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>Country / Origin :</h5>
                                     <input type="text"
-                                    placeholder="Contact Name"
+                                    placeholder="Country"
                                     style={{width:'200px',height:'20px',marginLeft:'45px'}}
                                     name="country"
                                     onChange={handleChange(false)}
@@ -374,10 +387,11 @@ const ClientOnboard = ({isOpen}) =>{
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'10px'}}>Customer Name :</h5>
                                     <input type="text"
                                     placeholder="Name"
-                                    style={{width:'200px',height:'20px',marginLeft:'50px'}}
-                                    name="name"
+                                    style={{width:'200px',height:'20px',marginLeft:'50px',backgroundColor:'lightgrey'}}
+                                    name="customerName"
                                     value={editedItem.customerName}
-                                    onChange={handleChange(false)}
+                                    onChange={handleChange(true)}
+                                    readOnly
                                     />
                                 </div>
                                 <div style={{display:'flex',flexDirection:'row',marginTop:'15px'}}>
@@ -385,9 +399,9 @@ const ClientOnboard = ({isOpen}) =>{
                                     <input type="text"
                                     placeholder="Name"
                                     style={{width:'200px',height:'20px',marginLeft:'50px'}}
-                                    name="name"
+                                    name="city"
                                     value={editedItem.city}
-                                    onChange={handleChange(false)}
+                                    onChange={handleChange(true)}
                                     />
                                 </div>
                             </div>
@@ -398,9 +412,9 @@ const ClientOnboard = ({isOpen}) =>{
                                   <input type="text"
                                     placeholder="Name"
                                     style={{width:'200px',height:'20px',marginLeft:'90px'}}
-                                    name="name"
+                                    name="street"
                                     value={editedItem.street}
-                                    onChange={handleChange(false)}
+                                    onChange={handleChange(true)}
                                     />
                                   {errors.name && <span className="error">{errors.name}</span>}
                               </div>
@@ -409,35 +423,31 @@ const ClientOnboard = ({isOpen}) =>{
                                     <input type="text"
                                     placeholder="Name"
                                     style={{width:'200px',height:'20px',marginLeft:'90px'}}
-                                    name="name"
+                                    name="state"
                                     value={editedItem.state}
-                                    onChange={handleChange(false)}
+                                    onChange={handleChange(true)}
                                     />
                                 </div>
                             </div>
                             <div style={{display:'flex',flexDirection:'row'}}>
                               <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>Country / Origin :</h5>
-                                    <select type="text"
-                                    // placeholder=""
-                                    style={{width:'220px',height:'40px',borderBlockColor:'green',borderRadius:'5px',marginLeft:'30px',padding:'1px'}}
-                                    name="cliRoleId"
+                                    <input type="text"
+                                    placeholder="Contact Name"
+                                    style={{width:'200px',height:'20px',marginLeft:'45px'}}
+                                    name="country "
                                     value={editedItem.country}
-                                    onChange={handleChangefordropdown(false)}>
-                                    <option value="">Select Role</option>
-                                    {roleData.map(option => (
-                                        <option key={option.id} value={option.id}>{option.countryName}</option>
-                                        ))}
-                                    </select>
+                                    onChange={handleChange(true)}
+                                  />
                                 </div>
                                 <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
                                   <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'10px'}}> Contact Name:</h5>
                                   <input type="text"
                                   placeholder="Email"
                                   style={{width:'200px',height:'20px',marginLeft:'45px'}}
-                                  name="email"
+                                  name="contactName"
                                   value={editedItem.contactName}
-                                  onChange={handleChange(false)}
+                                  onChange={handleChange(true)}
                                   />
                                   {errors.name && <span className="error">{errors.name}</span>}
                               </div>
@@ -447,11 +457,11 @@ const ClientOnboard = ({isOpen}) =>{
                               <div style={{display:'flex',flexDirection:'row',marginTop:'-5px'}}>
                                   <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'10px'}}> Phone No:</h5>
                                   <input type="text"
-                                  placeholder="Email"
+                                  placeholder="Contact Phone"
                                   style={{width:'200px',height:'20px',marginLeft:'45px'}}
-                                  name="email"
+                                  name="contactPhone"
                                   value={editedItem.contactPhone}
-                                  onChange={handleChange(false)}
+                                  onChange={handleChange(true)}
                                   />
                                   {errors.name && <span className="error">{errors.name}</span>}
                               </div>
@@ -459,10 +469,11 @@ const ClientOnboard = ({isOpen}) =>{
                                   <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>Email Id:</h5>
                                   <input type="email"
                                   placeholder="Email"
-                                  style={{width:'200px',height:'20px',marginLeft:'45px'}}
-                                  name="email"
+                                  style={{width:'200px',height:'20px',marginLeft:'45px',backgroundColor:'lightgrey'}}
+                                  name="contactEmail"
                                   value={editedItem.contactEmail}
-                                  onChange={handleChange(false)}
+                                  onChange={handleChange(true)}
+                                  readOnly
                                   />
                               </div>
                             </div>
@@ -470,20 +481,20 @@ const ClientOnboard = ({isOpen}) =>{
                               <div style={{display:'inline-flex',flexDirection:'row',marginTop:'-5px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>Description :</h5>
                                     <input type="text"
-                                    placeholder="Email"
+                                    placeholder="Description"
                                     style={{width:'200px',height:'20px',marginLeft:'35px'}}
-                                    name="email"
+                                    name="description"
                                     value={editedItem.description}
-                                    onChange={handleChange(false)}
+                                    onChange={handleChange(true)}
                                     />
                               </div>
                               <div style={{display:'inline-flex' ,marginLeft:'50px'}}>
                                   <label style={{marginLeft:'10px',fontSize:'17px',fontWeight:'700'}}> Active :</label>
                                   <label style={{display: 'inline-flex'}}> 
-                                      <input type="radio" name="isActive" value="Y" checked={editedItem.isActive === 'Y'}  style={{marginLeft:'50px'}} onChange={handleChange(false)}/> Yes
+                                      <input type="radio" name="isActive" value='true' checked={editedItem.isActive === true}  style={{marginLeft:'50px'}} onChange={handleChange(true)}/> Yes
                                   </label>
                                   <label style={{display: 'inline-flex'}}> 
-                                      <input type="radio" name="isActive" value="N" checked={editedItem.isActive === 'N'} style={{marginLeft:'30px'}} onChange={handleChange(false)}/> No
+                                      <input type="radio" name="isActive" value='false' checked={editedItem.isActive === false} style={{marginLeft:'30px'}} onChange={handleChange(true)}/> No
                                   </label>
                               </div>
                             </div>                            

@@ -1,12 +1,12 @@
 import React ,{useState ,useEffect }from "react";
-import './AssignmentMaster.css';
+import './PerformActivity.css';
 import { FiEdit } from "react-icons/fi";
 import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../Config";
 
-const AssignmentMaster = ({isOpen}) =>{
+const PerformActivity = ({isOpen}) =>{
     const [IsClickadd, setIsClickadd] = useState(false);
     const [data, setData] = useState([]);
     const [roleData, setroleData] = useState([]);
@@ -145,7 +145,7 @@ const AssignmentMaster = ({isOpen}) =>{
       };
 
     useEffect(() => {
-        fetch(`${Config.apiBaseUrl}/api/AssignmentMaster?CustomerId=${parseInt(sessionStorage.getItem('customerid'))}`)
+        fetch(`${Config.apiBaseUrl}/api/AssignmentMaster?CustomerId=9`)
           .then(response => response.json())
           .then(data => setData(data.data),console.log(data))
           .catch(error => console.error('Error fetching data:', error));
@@ -208,9 +208,9 @@ const AssignmentMaster = ({isOpen}) =>{
                         <td>{item.startDate}</td>
                         <td>{item.endDate}</td>
                         <td>{item.approver}</td>
-                        <td style={{textAlign:'center'}}>{item.evidenceDetails === null ? "---" : item.evidenceDetails}</td>
-                        <td>{item.auditCheck === true ? "Yes" : "No"}</td>
-                        <td>{item.approvalStatus === true ? "Yes" : "No"}</td>
+                        <td>{item.evidenceDetails}</td>
+                        <td>{item.auditCheck}</td>
+                        <td>{item.approvalStatus}</td>
                         <td><FiEdit onClick={() => handleEdit(item)} size={15} style={{cursor:'pointer',marginRight:'10px',marginLeft:'10px'}}/>   <MdDeleteForever size={20} style={{cursor:'pointer',color:'red',marginLeft:'10px'}}  onClick={() => handleDelete(item.id)}/></td>
                         </tr>
                     ))}
@@ -523,4 +523,4 @@ const AssignmentMaster = ({isOpen}) =>{
     );
 };
 
-export default AssignmentMaster;
+export default PerformActivity;

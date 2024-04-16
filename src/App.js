@@ -20,14 +20,14 @@ import ClientOnboard from './NavBarScreens/ClientOnboard';
 import LicenseManagement from './NavBarScreens/LicenseManagement';
 import CreateCompliance from './NavBarScreens/Configurations/CreateCompliance/CreateCompliance';
 import ViewCompliancePeriod from './NavBarScreens/Configurations/CreateCompliance/ViewCompliance/ViewCompliance';
-
+import CreateAssignments from './NavBarScreens/Configurations/CreateCompliance/CreateAssignments/CreateAssignments';
 
 // import ZoomableImage from './Login/ZoomableImgae';
 // import images from './Login/LoginIm.jpg';
 
 function App() {
 
-  const [ setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = () => {
     // Perform login logic here, for demonstration purposes, let's simulate successful login
@@ -62,6 +62,7 @@ function App() {
                 <Route path="viewcompliance" element={<ViewCompliancePeriod isOpen={isOpen }/>}/>
                 <Route path="license" element={<LicenseManagement isOpen={isOpen }/>}/>
                 <Route path="createcompliance" element={<CreateCompliance isOpen={isOpen }/>}/>
+                <Route path="createassignments" element={<CreateAssignments isOpen={isOpen }/>}/>
                 <Route path="clientonboard" element={<ClientOnboard isOpen={isOpen }/>}/>
                 <Route path="activity" element={<ActivityMaster isOpen={isOpen }/>}/>
                 <Route path="assignment" element={<AssignmentMaster isOpen={isOpen }/>}/>

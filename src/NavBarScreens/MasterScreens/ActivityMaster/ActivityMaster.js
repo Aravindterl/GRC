@@ -12,6 +12,7 @@ const ActivityMaster = ({isOpen}) =>{
     const [doerRoleData, setDoerroleData] = useState([]);
     const [approverRoleData, setApproverroleData] = useState([]);
     const [activityName, setActivityNames] = useState([]);
+    const [triggeractivity, setTriggerActivities] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
     const [errors] = useState({});
@@ -22,6 +23,7 @@ const ActivityMaster = ({isOpen}) =>{
     const [showPopup, setShowPopup] = useState(false);
     const [message, setmessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -37,22 +39,36 @@ const ActivityMaster = ({isOpen}) =>{
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
     const [formData, setFormData] = useState({
-        cliRoleId: 0,
-        name: '',
-        email:'',
-        phoneNo:'',
-        customerId:1,
-        createdBy:1,
-        status:''
+      activityDescr : '',
+      doerRole :'',
+      frequencyId:'',
+      duration:'',
+      refDocumentId:'' || null,
+      outputDocumentPath:'' || null,
+      triggeringActivityNameId:'' || null,
+      approverRole:'',
+      helpRef:'' || null,
+      isActive:'',
+      auditable:'',
+      activityNameId:'',
+      customerId:''
       });
+
     //   = (name) => (e) => 
       const handleChange =(isEdit) => (e) => {
         const { name, value } = e.target;
+        let updatedValue = value;
+        if(name === "auditable"){
+          updatedValue = value === "true" ? true : false;
+        }
+        if(name === "isActive"){
+          updatedValue = value === "true" ? true : false;
+        }
         if(isEdit){
             setEditedItem(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
         }
@@ -60,7 +76,7 @@ const ActivityMaster = ({isOpen}) =>{
             setFormData(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
         }
@@ -85,8 +101,12 @@ const ActivityMaster = ({isOpen}) =>{
       const handleSubmit = (e) => {
         e.preventDefault();
         setIsClickadd(false);
+        setFormData((prevState) => ({
+             ...prevState,
+          customerId:parseInt(sessionStorage.getItem('customerid'))
+        }));
         console.log(formData)
-        fetch(`${Config.apiBaseUrl}/api/UserMaster`, {
+        fetch(`${Config.apiBaseUrl}/api/ActivityMaster`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -161,11 +181,18 @@ const ActivityMaster = ({isOpen}) =>{
           .then(data => setDoerroleData(data))
           .catch(error => console.error('Error fetching data:', error));
       }, []);
-
+      //https://localhost:7062/api/LookUp/Activitylookup?CustomerId=17
       useEffect(() => {
         fetch(`${Config.apiBaseUrl}/api/LookUp/ApproverRolelookup?CustomerId=${sessionStorage.getItem('customerid')}`)
           .then(response => response.json())
           .then(data => setApproverroleData(data))
+          .catch(error => console.error('Error fetching data:', error));
+      }, []);
+
+      useEffect(() => {
+        fetch(`${Config.apiBaseUrl}/api/LookUp/Activitylookup?CustomerId=17${sessionStorage.getItem('customerid')}`)
+          .then(response => response.json())
+          .then(data => setTriggerActivities(data))
           .catch(error => console.error('Error fetching data:', error));
       }, []);
 
@@ -232,8 +259,8 @@ const ActivityMaster = ({isOpen}) =>{
                         <td>{item.refDocument}</td>
                         <td>{item.outputDocument}</td>
                         <td>{item.triggeringActivity}</td>
-                        <td>{item.auditable}</td>
-                        <td>{item.active}</td>
+                        <td>{item.auditable === true ? "Yes":"No"}</td>
+                        <td>{item.active === true ? "Yes":"No"}</td>
                         {/* <td>{item.disable}</td> */}
                         <td><FiEdit onClick={() => handleEdit(item)} size={15} style={{cursor:'pointer',marginRight:'10px',marginLeft:'10px'}}/>   <MdDeleteForever size={20} style={{cursor:'pointer',color:'red',marginLeft:'10px'}}  onClick={() => handleDelete(item.id)}/></td>
                         </tr>
@@ -258,31 +285,34 @@ const ActivityMaster = ({isOpen}) =>{
                               <div style={{display:'flex',flexDirection:'row'}}>
                                 <div style={{display:'flex',flexDirection:'row',marginTop:'15px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'10px'}}>Activity Name :</h5>
-                                    <input type="text"
-                                    placeholder="Name"
-                                    style={{width:'200px',height:'20px',marginLeft:'50px'}}
-                                    name="name"
-                                    onChange={handleChange(false)}
-                                    />
+                                    <select type="text"
+                                    style={{width:'220px',height:'40px',borderBlockColor:'green',borderRadius:'5px',marginLeft:'40px',padding:'1px'}}
+                                    name="activityNameId"
+                                    value={selectedValue.activity}
+                                    onChange={handleChangefordropdown('activity',false)}>
+                                    <option value="">Select Activity</option>
+                                    {activityName.map(option => (
+                                        <option key={option.activityId} value={option.activityId}>{option.activityName}</option>
+                                        ))}
+                                </select>
                                 </div>
                                 <div style={{display:'flex',flexDirection:'row',marginTop:'15px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'10px'}}>Activity Descr :</h5>
                                     <input type="text"
-                                    placeholder="Name"
+                                    placeholder="Activity Descr"
                                     style={{width:'200px',height:'20px',marginLeft:'50px'}}
-                                    name="name"
+                                    name="activityDescr"
                                     onChange={handleChange(false)}
                                     />
                                 </div>
                             </div>
-
                             <div style={{display:'flex',flexDirection:'row'}}>
                               <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
                                   <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'10px'}}> Doer:</h5>
                                   <select type="text"
                                   // placeholder=""
                                   style={{width:'220px',height:'40px',borderBlockColor:'green',borderRadius:'5px',marginLeft:'120px',padding:'1px'}}
-                                  name="doerRoleId"
+                                  name="doerRole"
                                   value={selectedValue.doer}
                                   onChange={handleChangefordropdown('doer',false)}>
                                   <option value="">Select Role</option>
@@ -294,12 +324,17 @@ const ActivityMaster = ({isOpen}) =>{
                               </div>
                               <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>Frequency :</h5>
-                                    <input type="text"
-                                    placeholder="Name"
-                                    style={{width:'200px',height:'20px',marginLeft:'70px'}}
-                                    name="name"
-                                    onChange={handleChange(false)}
-                                    />
+                                    <select type="text"
+                                  // placeholder=""
+                                  style={{width:'220px',height:'40px',borderBlockColor:'green',borderRadius:'5px',marginLeft:'40px',padding:'1px'}}
+                                  name="frequencyId"
+                                  value={selectedValue.frequency}
+                                  onChange={handleChangefordropdown('frequency',false)}>
+                                  <option value="">Select Frequency</option>
+                                  <option value="1">Monthly</option>
+                                  <option value="2">Quarterly</option>
+                                  <option value="3">Yearly</option>
+                                </select>
                                 </div>
                             </div>
                             <div style={{display:'flex',flexDirection:'row'}}>
@@ -308,7 +343,7 @@ const ActivityMaster = ({isOpen}) =>{
                                     <input type="text"
                                     placeholder="Name"
                                     style={{width:'200px',height:'20px',marginLeft:'90px'}}
-                                    name="name"
+                                    name="duration"
                                     onChange={handleChange(false)}
                                     />
                                 </div>
@@ -317,7 +352,7 @@ const ActivityMaster = ({isOpen}) =>{
                                   <select type="text"
                                   // placeholder=""
                                   style={{width:'220px',height:'40px',borderBlockColor:'green',borderRadius:'5px',marginLeft:'70px',padding:'1px'}}
-                                  name="approverRoleId"
+                                  name="approverRole"
                                   value={selectedValue.approver}
                                   onChange={handleChangefordropdown('approver',false)}>
                                   <option value="">Select Role</option>
@@ -335,11 +370,11 @@ const ActivityMaster = ({isOpen}) =>{
                                   <select type="text"
                                   // placeholder=""
                                   style={{width:'220px',height:'40px',borderBlockColor:'green',borderRadius:'5px',marginLeft:'20px',padding:'1px'}}
-                                  name="activityId"
-                                  value={selectedValue.activity}
-                                  onChange={handleChangefordropdown('activity',false)}>
+                                  name="triggeringActivityNameId"
+                                  value={selectedValue.triggeractivity}
+                                  onChange={handleChangefordropdown('triggeractivity',false)}>
                                   <option value="">Select Role</option>
-                                  {activityName.map(option => (
+                                  {triggeractivity.map(option => (
                                       <option key={option.activityId} value={option.activityId}>{option.activityName}</option>
                                       ))}
                                 </select>
@@ -350,7 +385,7 @@ const ActivityMaster = ({isOpen}) =>{
                                   <input type="file"
                                   placeholder="Email"
                                   style={{width:'200px',height:'20px',marginLeft:'45px'}}
-                                  name="email"
+                                  name="refDocumentId"
                                   onChange={handleChange(false)}
                                   />
                               </div>
@@ -359,18 +394,16 @@ const ActivityMaster = ({isOpen}) =>{
                               <div style={{display:'flex',flexDirection:'row',marginTop:'-5px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>Help Ref Docs :</h5>
                                     <input type="file"
-                                    placeholder="Email"
                                     style={{width:'200px',height:'20px',marginLeft:'45px'}}
-                                    name="email"
+                                    name="helpRef"
                                     onChange={handleChange(false)}
                                     />
                               </div>
                               <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
                                   <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>Output Document:</h5>
-                                  <input type="file"
-                                  placeholder="Email"
+                                  <input type="file"                                  
                                   style={{width:'200px',height:'20px',marginLeft:'25px'}}
-                                  name="email"
+                                  name="outputDocumentPath"
                                   onChange={handleChange(false)}
                                   />
                               </div>
@@ -378,23 +411,23 @@ const ActivityMaster = ({isOpen}) =>{
                               <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'50px',fontSize:'17px',fontWeight:'700'}}> Auditable :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="auditable" value="Y" style={{marginLeft:'70px'}} onChange={handleChange(false)}/>YES
+                                    <input type="radio" name="auditable" value="true" style={{marginLeft:'70px'}} onChange={handleChange(false)}/>YES
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="auditable" value="N" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>NO
+                                    <input type="radio" name="auditable" value="false" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>NO
                                 </label>
                               </div>
                               <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'50px',fontSize:'17px',fontWeight:'700'}}> Status :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="status" value="Y" style={{marginLeft:'95px'}} onChange={handleChange(false)}/>Active
+                                    <input type="radio" name="isActive" value="true" style={{marginLeft:'95px'}} onChange={handleChange(false)}/>Active
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="status" value="N" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>Inactive
+                                    <input type="radio" name="isActive" value="false" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>Inactive
                                 </label>
                               </div>
-                             <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'370px',marginBottom:'50px'}}>Submit</button>
                            </div> 
+                           <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'370px',marginBottom:'50px'}}>Submit</button>
                     </div>
                 </form>
             </div>):''}
