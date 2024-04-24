@@ -5,6 +5,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../../Config";
+import Nodata from "../../../../Nodata.jpg";
 
 const CreateAssignments = ({isOpen}) =>{
     const [IsClickadd, setIsClickadd] = useState(false);
@@ -201,7 +202,7 @@ const CreateAssignments = ({isOpen}) =>{
     return(
         <div className={`role ${isOpen ? 'open' : ''}`}>
             <div style={{flexDirection:'row',marginTop:'45px',marginLeft:'25px',height:'90px',backgroundColor:'#DEF5E5',borderRadius:'9px'}}>
-                <label style={{fontSize:'20px',fontWeight:'700',color:"red",marginLeft:'25px',marginTop:'10px'}}>Create Assignments</label>
+                <label style={{fontSize:'20px',fontWeight:'700',color:"black",marginLeft:'25px',marginTop:'10px'}}>Create Assignments</label>
                 <input
                       type="text"
                       placeholder="Search..."
@@ -210,7 +211,7 @@ const CreateAssignments = ({isOpen}) =>{
                       // onChange={handleInputChange}
                   />
             </div>
-            <div className="rolemastertable">
+            {currentItems.length !== 0 ?   <div className="rolemastertable">
                 <table>
                     <thead>
                     <tr>
@@ -242,7 +243,7 @@ const CreateAssignments = ({isOpen}) =>{
                 <span style={{border:'1px solid black',borderRadius:'5px',padding:'5px'}}>{currentPage}</span>
                 <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastItem >= data.length} style={{width:'30px',backgroundColor:'transparent'}}><BiLastPage size={20} color="black"/></button>
             </div>
-            </div>        
+            </div>: <div style={{display:'flex',alignContent:'center',justifyContent:'center',backgroundColor:'white'}}><img src={Nodata} style={{marginTop:'25px',marginLeft:'-39px',borderRadius:'10px'}}/></div>}      
 
             {showPopup && (
             <div className="responsepopup">

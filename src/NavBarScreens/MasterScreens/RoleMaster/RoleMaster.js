@@ -5,8 +5,14 @@ import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../Config";
+import Alert from '@mui/material/Alert';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-notifications/lib/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import Nodata from "../../../Nodata.jpg";
 
-const RoleMaster = ({isOpen}) =>{
+const RoleMaster = ({isOpen}) => {
     const [IsClickadd, setIsClickadd] = useState(false);
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -56,6 +62,10 @@ const RoleMaster = ({isOpen}) =>{
             }
       };
 
+      const notify = () => {{
+        NotificationManager.success('', message,2000);
+      }};
+
       const handleSubmit = async (e) => {
         e.preventDefault();
         setIsClickadd(false);
@@ -81,6 +91,11 @@ const RoleMaster = ({isOpen}) =>{
             setShowPopup(false);
             window.location.reload();
           }, 4000);
+
+
+          if(showPopup){
+            notify();
+          }
           console.log('Success:', data.message);
         })
         .catch(error => {
@@ -175,11 +190,17 @@ const RoleMaster = ({isOpen}) =>{
         setShowPopup(false);
         window.location.reload();
       };
+
+      useEffect(() => {
+        if (showPopup) {
+            notify();
+        }
+    }, [showPopup]);
      
     return(
         <div className={`role ${isOpen ? 'open' : ''}`}>
             <div style={{flexDirection:'row',marginTop:'45px',marginLeft:'25px',height:'90px',backgroundColor:'#DEF5E5',borderRadius:'9px'}}>
-                <label style={{fontSize:'20px',fontWeight:'700',color:"red",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'purple'}}>Role</span></label>
+                <label style={{fontSize:'20px',fontWeight:'700',color:"black",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'black'}}>Role</span></label>
                 <input
                         type="text"
                         placeholder="Search..."
@@ -189,7 +210,7 @@ const RoleMaster = ({isOpen}) =>{
                     />
                 <div className="addnewrole" onClick={toggleArrow}><label style={{fontSize:'15px',color:'white',cursor:'pointer'}}>+ Add New Role</label></div>
             </div>
-            <div className="rolemastertable">
+            {currentItems.length !== 0 ?   <div className="rolemastertable">
                 <table style={{marginLeft:'90px'}}>
                     <thead>
                     <tr>                        
@@ -217,7 +238,7 @@ const RoleMaster = ({isOpen}) =>{
                     <span style={{border:'1px solid black',borderRadius:'5px',padding:'5px'}}>{currentPage}</span>
                 <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastItem >= data.length} style={{width:'30px',backgroundColor:'transparent'}}><BiLastPage size={20} color="black"/></button>
             </div>
-            </div>
+            </div>: <div style={{display:'flex',alignContent:'center',justifyContent:'center',backgroundColor:'white'}}><img src={Nodata} style={{marginTop:'25px',marginLeft:'-39px',borderRadius:'10px'}}/></div>}
             
             {IsClickadd ? (<div className="popup" >
                 <form onSubmit={handleSubmit} >
@@ -314,11 +335,15 @@ const RoleMaster = ({isOpen}) =>{
                 </form>
             </div>)}
             {showPopup && (
-            <div className="responsepopup">
-              <p>{message}</p>
-              <button className="okbuttonforresponse" onClick={togglepopup}>OK</button>
-            </div>
+            // <div className="responsepopup">
+            //   {/* <p>{message}</p> */}
+            //   <button className="okbuttonforresponse" onClick={togglepopup}>OK</button>
+            // </div>
+            <NotificationContainer/>
             )}
+             {/* <button onClick={notify}>Notify!</button> */}
+            {/* <ToastContainer style={{width:'300px'}}/> */}
+             
         </div>
     );
 };

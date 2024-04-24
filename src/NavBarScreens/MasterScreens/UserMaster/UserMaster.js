@@ -5,6 +5,9 @@ import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../Config";
+import 'react-notifications/lib/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import Nodata from "../../../Nodata.jpg";
 
 const UserMaster = ({isOpen}) =>{
     const [IsClickadd, setIsClickadd] = useState(false);
@@ -125,6 +128,11 @@ const UserMaster = ({isOpen}) =>{
 
       const handleSave = () => {
         console.log(editedItem)
+        setEditedItem(prevState => ({
+          ...prevState,         
+          customerId: parseInt(sessionStorage.getItem('customerid')) 
+          // createdBy: parseInt(sessionStorage.getItem('userId')) 
+        }));
         fetch(`${Config.apiBaseUrl}/api/UserMaster?Userid=${editedItem.id}`, {
           method: 'PUT',
           headers: {
@@ -190,10 +198,20 @@ const UserMaster = ({isOpen}) =>{
         setShowPopup(false);
       };
      
+      const notify = () => {{
+        NotificationManager.success('', message,2000);
+      }};
+
+      useEffect(() => {
+        if (showPopup) {
+            notify();
+        }
+    }, [showPopup]);
+
     return(
         <div className={`role ${isOpen ? 'open' : ''}`}>
             <div style={{flexDirection:'row',marginTop:'45px',marginLeft:'25px',height:'90px',backgroundColor:'#DEF5E5',borderRadius:'9px'}}>
-                <label style={{fontSize:'20px',fontWeight:'700',color:"red",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'purple'}}>User</span></label>
+                <label style={{fontSize:'20px',fontWeight:'700',color:"black",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'black'}}>User</span></label>
                 <input
                         type="text"
                         placeholder="Search..."
@@ -203,7 +221,7 @@ const UserMaster = ({isOpen}) =>{
                     />
                 <div className="addnewrole" onClick={toggleArrow}><label style={{fontSize:'15px',color:'white',cursor:'pointer'}}>+ Add New User</label></div>
             </div>
-            <div className="rolemastertable">
+            {currentItems.length !== 0 ?   <div className="rolemastertable">
                 <table style={{marginLeft:'120px'}}>
                     <thead>
                     <tr>
@@ -234,7 +252,7 @@ const UserMaster = ({isOpen}) =>{
                 <span style={{border:'1px solid black',borderRadius:'5px',padding:'5px'}}>{currentPage}</span>
                 <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastItem >= data.length} style={{width:'30px',backgroundColor:'transparent'}}><BiLastPage size={20} color="black"/></button>
             </div>
-            </div>
+            </div>: <div style={{display:'flex',alignContent:'center',justifyContent:'center',backgroundColor:'white'}}><img src={Nodata} style={{marginTop:'25px',marginLeft:'-39px',borderRadius:'10px'}}/></div>}
             
             {IsClickadd ? (<div className="popup" >
                 <form onSubmit={handleSubmit} >
@@ -345,10 +363,7 @@ const UserMaster = ({isOpen}) =>{
             </div>)}
 
             {showPopup && (
-            <div className="responsepopup">
-              <p>{message}</p>
-              <button className="okbuttonforresponse" onClick={togglepopup}>OK</button>
-            </div>
+             <NotificationContainer/>
             )}
         </div>
     );

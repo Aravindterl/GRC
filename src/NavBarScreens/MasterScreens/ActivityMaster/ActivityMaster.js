@@ -5,6 +5,9 @@ import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../Config";
+import 'react-notifications/lib/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import Nodata from "../../../Nodata.jpg";
 
 const ActivityMaster = ({isOpen}) =>{
     const [IsClickadd, setIsClickadd] = useState(false);
@@ -19,11 +22,10 @@ const ActivityMaster = ({isOpen}) =>{
     const [selectedItem, setSelectedItem] = useState(null);
     const [editedItem, setEditedItem] = useState(null);
     //const [options, setOptions] = useState([]);
-    const [selectedValue, setSelectedValue] = useState({doer:'',approver:'',activity:''});
+    const [selectedValue, setSelectedValue] = useState({doer:[],approver:[],activity:[]});
     const [showPopup, setShowPopup] = useState(false);
     const [message, setmessage] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
-    
+    const [searchQuery, setSearchQuery] = useState(''); 
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -36,6 +38,7 @@ const ActivityMaster = ({isOpen}) =>{
       item.frequency.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.approverRole.toLowerCase().includes(searchQuery.toLowerCase()) 
     );
+    
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
     const [formData, setFormData] = useState({
@@ -81,6 +84,10 @@ const ActivityMaster = ({isOpen}) =>{
               });
         }
       };
+
+      const notify = () => {{
+        NotificationManager.success('', message);
+      }};
 
       const handleChangefordropdown = (dropdownType, isEdit) => (e) => {
         setSelectedValue(e.target.value);
@@ -214,11 +221,18 @@ const ActivityMaster = ({isOpen}) =>{
     const togglepopup = () => {
       setShowPopup(false);
     };
-     
+
+    
+    useEffect(() => {
+      if (showPopup) {
+          notify();
+      }
+     }, [showPopup]);
+    
     return(
         <div className={`role ${isOpen ? 'open' : ''}`}>
             <div style={{flexDirection:'row',marginTop:'45px',marginLeft:'25px',height:'90px',backgroundColor:'#DEF5E5',borderRadius:'9px'}}>
-                <label style={{fontSize:'20px',fontWeight:'700',color:"red",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'purple'}}>Activity</span></label>
+                <label style={{fontSize:'20px',fontWeight:'700',color:"black",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'black'}}>Activity</span></label>
                 <input
                         type="text"
                         placeholder="Search..."
@@ -227,8 +241,8 @@ const ActivityMaster = ({isOpen}) =>{
                         onChange={e => setSearchQuery(e.target.value)}
                     />
                 <div className="addnewrole" onClick={toggleArrow}><label style={{fontSize:'15px',color:'white',cursor:'pointer',marginTop:'10px'}}>+ Add New Activity</label></div>
-            </div>
-            <div className="rolemastertable">
+            </div>  
+            {currentItems.length !== 0 ?  <div className="rolemastertable">
                 <table style={{borderCollapse:'collapse',width:'1430px'}}>
                     <thead>
                         <tr>
@@ -272,7 +286,7 @@ const ActivityMaster = ({isOpen}) =>{
                 <span style={{border:'1px solid black',borderRadius:'5px',padding:'5px'}}>{currentPage}</span>
                 <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastItem >= data.length} style={{width:'30px',backgroundColor:'transparent'}}><BiLastPage size={20} color="black"/></button>
             </div>
-            </div>
+            </div>: <div style={{display:'flex',alignContent:'center',justifyContent:'center',backgroundColor:'white'}}><img src={Nodata} style={{marginTop:'25px',marginLeft:'-39px',borderRadius:'10px'}}/></div>}
             
             {IsClickadd ? (<div className="popup" >
                 <form onSubmit={handleSubmit} >
@@ -294,7 +308,8 @@ const ActivityMaster = ({isOpen}) =>{
                                     {activityName.map(option => (
                                         <option key={option.activityId} value={option.activityId}>{option.activityName}</option>
                                         ))}
-                                </select>
+                                </select>                            
+
                                 </div>
                                 <div style={{display:'flex',flexDirection:'row',marginTop:'15px'}}>
                                     <h5 style={{marginLeft:'50px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'10px'}}>Activity Descr :</h5>
@@ -582,10 +597,7 @@ const ActivityMaster = ({isOpen}) =>{
                 </form>
             </div>)}
             {showPopup && (
-            <div className="responsepopup">
-              <p>{message}</p>
-              <button className="okbuttonforresponse" onClick={togglepopup}>OK</button>
-            </div>
+             <NotificationContainer/>
             )}
         </div>
     );

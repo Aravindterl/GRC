@@ -16,7 +16,7 @@
     /* background-color: #61dafb; */
 }
 
-.assignaddnewrole{
+.addnewrole{
     width: 180px;
     background-color: #003300;
     height: 40px;
@@ -67,14 +67,14 @@ table {
     background-color: lightgrey;
   }
 
-.Assignrolemastertable{
+.rolemastertable{
   margin-left: 25px;
   width: 1140px;
   height: 390px;
   margin-top: 20px;
-  background-color: 	#F0F0F0;
+  background-color: #F8EDFF;
   border-radius: 8px;
- 
+  overflow-y: auto; 
 }
 
 .popup {

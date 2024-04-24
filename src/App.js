@@ -21,6 +21,9 @@ import LicenseManagement from './NavBarScreens/LicenseManagement';
 import CreateCompliance from './NavBarScreens/Configurations/CreateCompliance/CreateCompliance';
 import ViewCompliancePeriod from './NavBarScreens/Configurations/CreateCompliance/ViewCompliance/ViewCompliance';
 import CreateAssignments from './NavBarScreens/Configurations/CreateCompliance/CreateAssignments/CreateAssignments';
+import PerformActivity from './NavBarScreens/PerformActivity/PerformActivity';
+import ApprovePerformActivity from './NavBarScreens/PerformActivity/ApprovePerformActivity';
+import CorrectionPerformActivity from './NavBarScreens/PerformActivity/CorrectionPerformActivity';
 
 // import ZoomableImage from './Login/ZoomableImgae';
 // import images from './Login/LoginIm.jpg';
@@ -34,6 +37,7 @@ function App() {
     setIsLoggedIn(true);
     //isLoggedIn
   };
+  
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,6 +45,7 @@ function App() {
     setIsOpen(newIsOpen);
   };
 
+ 
   return (
     <div>
       <BrowserRouter>
@@ -63,6 +68,10 @@ function App() {
                 <Route path="license" element={<LicenseManagement isOpen={isOpen }/>}/>
                 <Route path="createcompliance" element={<CreateCompliance isOpen={isOpen }/>}/>
                 <Route path="createassignments" element={<CreateAssignments isOpen={isOpen }/>}/>
+                <Route path="performactivity" element={<PerformActivity isOpen={isOpen }/>}/>
+                <Route path="correctionperformactivity" element={<CorrectionPerformActivity isOpen={isOpen }/>}/>
+                <Route path="approveperformactivity" element={<ApprovePerformActivity isOpen={isOpen }/>}/>
+                <Route path="performactivity" element={<PerformActivity isOpen={isOpen }/>}/>
                 <Route path="clientonboard" element={<ClientOnboard isOpen={isOpen }/>}/>
                 <Route path="activity" element={<ActivityMaster isOpen={isOpen }/>}/>
                 <Route path="assignment" element={<AssignmentMaster isOpen={isOpen }/>}/>

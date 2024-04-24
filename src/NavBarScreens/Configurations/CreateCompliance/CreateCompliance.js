@@ -16,6 +16,7 @@ const CreateCompliance = ({isOpen}) =>{
     const [message, setmessage] = useState('');    
     const [licenses, setLicenses] = useState([]);
     const [selectedLicense, setSelectedLicense] = useState();
+    const [selectedStandard, setSelectedStandard] = useState();
     const [selectedLicenseData , setSelectedLicenseData] = useState([]);
     const [showLicenseData, setShowLicenseData] = useState(false); // State to manage the visibility of the license data block
     const [isLoading, setIsLoading] = useState(false);
@@ -23,10 +24,10 @@ const CreateCompliance = ({isOpen}) =>{
     const [isLastCompliancethere, setIsLastCompliancethere] = useState(true);
     const [hasLastCompliane, setHaslastCompliance] = useState(false);
     const [popupresponse, setPopUpResponse] = useState(false);
-    const [isOpenCreate, setisOpenCreate] = useState(false);
+    var isOpenCreate = false;
     
     const [formData, setFormData] = useState({
-        standardId: 1,
+        standardId: '',
         complStartDate: '',
         complEndDate:'',                
         customerId:'',
@@ -57,8 +58,10 @@ const CreateCompliance = ({isOpen}) =>{
       const handleLicenseChange = (e) => {
         const selectedLicenseId = e.target.value;
         const selectedLicenseInfo = licenses.find(license => license.licenseLookupId === parseInt(selectedLicenseId));
-        setSelectedItem(selectedLicenseInfo);        
-        setSelectedLicense(selectedLicenseId);    
+        setSelectedItem(selectedLicenseInfo);   
+        setSelectedStandard(selectedLicenseInfo.standardId);     
+        setSelectedLicense(selectedLicenseId);   
+
       };
   
       // Submit function to be implemented
@@ -100,7 +103,8 @@ const CreateCompliance = ({isOpen}) =>{
             ...prevState,
             customerId: parseInt(sessionStorage.getItem('customerid')), 
             licenseId: parseInt(selectedLicense),
-            CanClosePrevCompliancePeriod: isOpenCreate
+            standardId : parseInt(selectedStandard) ,
+            CanClosePrevCompliancePeriod: false
           }));
       
           try {
@@ -130,8 +134,7 @@ const CreateCompliance = ({isOpen}) =>{
           }
         }     
       };
-      
-       
+             
       const renderDateOrPlaceholder = (date) => {
         if (date) {
             return formatDate(date);
@@ -175,13 +178,27 @@ const CreateCompliance = ({isOpen}) =>{
 
       const handlePostdata = async () => {
         if (popupresponse) {
-          setFormData((prevState) => ({
-            ...prevState,         
-            customerId: parseInt(sessionStorage.getItem('customerid')), 
-            licenseId: parseInt(selectedLicense),
-            CanClosePrevCompliancePeriod: isOpenCreate
-          }));
-      
+          
+          // setFormData((prevState) => ({
+          //   ...prevState,         
+          //   customerId : parseInt(sessionStorage.getItem('customerid')), 
+          //   licenseId : parseInt(selectedLicense),                   
+          //   standardId : parseInt(selectedStandard),
+          //   CanClosePrevCompliancePeriod : true
+          // }));
+          // if(isOpenCreate){
+          //   setFormData((prevState) => ({
+          //     ...prevState,
+          //      CanClosePrevCompliancePeriod : true
+          //   }));
+          // }else{
+          //   setFormData((prevState) => ({
+          //     ...prevState,
+          //      CanClosePrevCompliancePeriod : false
+          //   }));
+          // }
+
+         console.log(formData)
           try {
             const response = await fetch(`${Config.apiBaseUrl}/api/CompliancePeriod`, {
               method: 'POST',
@@ -210,17 +227,19 @@ const CreateCompliance = ({isOpen}) =>{
       
       const toggleArrow = () => {
         setIsClickadd(!IsClickadd);       
-      };
+      };      
 
-      const handlePopUp = (isOpen) => {
-        if(isOpen){
-          setisOpenCreate(true);
-        }
-        else{
-          setisOpenCreate(false);
-        }
-          
+    
+      const handlePopUp = (CanClosePrevCompliancePeriod) => { 
+        isOpenCreate = CanClosePrevCompliancePeriod;                 
           setPopUpResponse(true);
+          setFormData((prevState) => ({
+            ...prevState,
+            customerId: parseInt(sessionStorage.getItem('customerid')), 
+            licenseId: parseInt(selectedLicense),                   
+            standardId: parseInt(selectedStandard),
+            CanClosePrevCompliancePeriod: isOpenCreate
+          }));
           handlePostdata();  
           setHaslastCompliance(false);
       }
@@ -355,17 +374,19 @@ const CreateCompliance = ({isOpen}) =>{
             </div>
             )}
             {showPopuptoClosePrv && (
-            <div className="responsepopup">
+            <div className="lstresponsepopup">
               <p>Would you like to Close Previous compliance Period</p>
               <button className="okbuttonforresponse">OK</button>
             </div>
             )}
             {hasLastCompliane &&(
-              <div className="responsepopup" style={{height:'auto'}}>
-                Your Compliance period has been created Successfully.
-
-                Click <span style={{color:'blue'}}>YES</span> to continue   To create Activity Assignment’s for the above compliance period. Click Close to Exit!.
-               <div style={{display:'flex',flexDirection:'row'}}> <button  onClick={() => handlePopUp(true)} style={{width:'150px'}}>Close & Create</button> <button  onClick={() => handlePopUp(false)}  style={{width:'150px',marginLeft:'10px'}}>keepOpen & Create</button></div>
+              <div className="overlay">
+              <div className="lstresponsepopup" style={{height:'auto'}}>
+               <span style={{fontWeight:'490',marginTop:'10px',marginLeft:'10px'}}>You already have a compliance period that is Active. </span><br/>
+               <span style={{marginLeft:'25px',marginTop:'10px',fontSize:'20px'}}> Would you like to close the compliance <span style={{marginLeft:'30px'}}>Period and create new one.</span></span><br/>
+               <div style={{display:'flex',flexDirection:'row',marginTop:'10px'}}> <button  onClick={() => handlePopUp(true)} style={{width:'150px',backgroundColor:'black'}}>CLOSE & CREATE</button> <button  onClick={() => handlePopUp(false)}  style={{width:'150px',marginLeft:'45px',backgroundColor:'blue'}}>OPEN & CREATE</button></div>
+               <span style={{fontSize:'10px',marginTop:'5px'}}>Click (Keep Open will Make older Compliance Period Inactive )</span>
+              </div>
               </div>
             )}
         </div>

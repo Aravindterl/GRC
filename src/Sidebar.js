@@ -22,6 +22,21 @@ const Sidebar = ({isOpen ,toggleSidebar}) => {
     const [isSystemAdmin, setSystemAdmin] = useState(false);
 
       const submenuRef = useRef(null);
+      // const submenuLinks = document.querySelectorAll('.submenuMaster a');
+
+      // submenuLinks.forEach(link => {
+      //   link.addEventListener('click', function() {
+      //     // Toggle active class for the clicked link
+      //     this.classList.toggle('active');
+      
+      //     // Remove active class from other links except the clicked one
+      //     submenuLinks.forEach(otherLink => {
+      //       if (otherLink !== this) {
+      //         otherLink.classList.remove('active');
+      //       }
+      //     });
+      //   });
+      // });
 
       const toggleArrow = (event) => {
           event.stopPropagation(); // Stop event propagation
@@ -142,7 +157,16 @@ const Sidebar = ({isOpen ,toggleSidebar}) => {
           </div>
               <ul className={`sidemenubar ${isOpen ? 'open' : ''}`}>
                 <li><Link to='clientmanagement' style={{textDecoration:'none',display:'inline-flex'}} onClick={toggleisGovarOpen} >{isGovarOpen ? <MdKeyboardArrowDown size={20}/> :  <MdKeyboardArrowRight size={20}/>}&nbsp;Governance</Link></li>
-                <li><Link to='assignment' style={{textDecoration:'none',display:'inline-flex'}} className='knowledgemanagement' onClick={toggleArrow} > {isKnowledgeOpen ? (<MdKeyboardArrowDown size={20}/>) : (<MdKeyboardArrowRight size={20}/>)} &nbsp;Activity Management</Link></li>
+                <li><Link  style={{textDecoration:'none',display:'inline-flex'}} className='knowledgemanagement' onClick={toggleisGovarOpen} > {isKnowledgeOpen ? (<MdKeyboardArrowDown size={20}/>) : (<MdKeyboardArrowRight size={20}/>)} &nbsp;Activity Management</Link>
+                {isGovarOpen ? (
+                        <div className='submenuMaster' ref={submenuRef}>
+                            <Link  to='performactivity'>Open</Link>
+                            <Link  to='approveperformactivity'>Approve</Link>
+                            {/* <Link  to='clientoffboard'>Audit</Link> */}
+                            <Link  to='correctionperformactivity'>Correction</Link>
+                            <Link  to='assignment'>Closed</Link>
+                       </div>
+                    ):''}</li>
                 <li><Link to='helpcontent' style={{textDecoration:'none',display:'inline-flex'}} onClick={toggleishelpOpen}> {isHelpOpen ? (<MdKeyboardArrowDown size={20}/>) : (<MdKeyboardArrowRight size={20}/>)} &nbsp;Help Content</Link></li>
             </ul></span>)}
             <div className='helpbox'>
