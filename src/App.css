@@ -33,6 +33,7 @@
   width: 250px;
   background-color: #04250C;
   position: fixed;
+  border-top-right-radius:  20px;
   top: 0;
   left: -250px;
   transition: left 0.5s;
@@ -65,6 +66,12 @@
 .submenuMaster a:hover {
   background-color: lightblue;
   border-radius: 5px;
+}
+
+.submenuMaster a:focus {
+  background-color: #04250C;
+  border-radius: 5px;
+  color: white;
 }
 
 .sidenav a {
@@ -177,6 +184,9 @@ ul{
   left: 0px;
   margin-top: 25px;
 }
+.sidemenubar:active{
+  background-color: #04250C;
+}
 
 ul li {
   margin-bottom: 20px; /* Adjust the value as needed for the desired gap */
@@ -251,7 +261,7 @@ ul li {
 }
 
 .topnav{
-  background-color: #EABCC3;
+  background-color: lightgray;
   padding: 10px 20px;
   width: 100%;
   height: 40px;

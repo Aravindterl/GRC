@@ -16,16 +16,23 @@ const CreateCompliance = ({isOpen}) =>{
     const [message, setmessage] = useState('');    
     const [licenses, setLicenses] = useState([]);
     const [selectedLicense, setSelectedLicense] = useState();
+    const [selectedStandard, setSelectedStandard] = useState();
     const [selectedLicenseData , setSelectedLicenseData] = useState([]);
     const [showLicenseData, setShowLicenseData] = useState(false); // State to manage the visibility of the license data block
     const [isLoading, setIsLoading] = useState(false);
     const [showPopuptoClosePrv, setShowPopuptoClosePrev] = useState(false);
     const [isLastCompliancethere, setIsLastCompliancethere] = useState(true);
+    const [hasLastCompliane, setHaslastCompliance] = useState(false);
+    const [popupresponse, setPopUpResponse] = useState(false);
+    var isOpenCreate = false;
+    
     const [formData, setFormData] = useState({
-        standardId: 1,
+        standardId: '',
         complStartDate: '',
         complEndDate:'',                
-        customerId:9,
+        customerId:'',
+        licenseId:'',
+        CanClosePrevCompliancePeriod:''
       });    
     
       const handleChange =(isEdit) => (e) => {
@@ -47,88 +54,91 @@ const CreateCompliance = ({isOpen}) =>{
               });
             }
       };
-
-
-  
-      useEffect(() => {
-          // Fetch licenses here and update the state
-          // setLicenses(fetchedLicenses);          
-      }, []);
   
       const handleLicenseChange = (e) => {
         const selectedLicenseId = e.target.value;
         const selectedLicenseInfo = licenses.find(license => license.licenseLookupId === parseInt(selectedLicenseId));
-        setSelectedItem(selectedLicenseInfo);        
-        setSelectedLicense(selectedLicenseId);    
+        setSelectedItem(selectedLicenseInfo);   
+        setSelectedStandard(selectedLicenseInfo.standardId);     
+        setSelectedLicense(selectedLicenseId);   
+
       };
   
       // Submit function to be implemented
-      const handleSubmit = (e) => {
-          e.preventDefault();
-          setIsLoading(true);  
-          const licensevalue = parseInt(selectedLicense);
-          try{            
-            fetch(`${Config.apiBaseUrl}/api/LookUp/compliananceperiodforguidence?LicenseId=${licensevalue}`)
-                .then(response => response.json())
-                .then(data => {
-                    setSelectedLicenseData(data);
-                    setTimeout(() => {                       
-                        setShowLicenseData(true);
-                        setIsLoading(false);
-                    }, 2000);
-                     // Set the state to show license data block
-                })
-                .catch(error => console.error('Error fetching data:', error)); 
-                //console.log("GuidenceData",selectedLicenseData.licenseDates.startDate)           
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);  
+        const licensevalue = parseInt(selectedLicense);
+        
+        try {
+          const response = await fetch(`${Config.apiBaseUrl}/api/LookUp/compliananceperiodforguidence?LicenseId=${licensevalue}`);
+          
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
           }
-          catch(error){
-            console.error("Post failed", error);
-            alert("Post failed: " + error.message);
-          }
-          // Submission logic here
-      };
-
-    const handlePost = (e) => {
-        e.preventDefault(); 
-            
-        console.log(formData)
-        try{
-          fetch(`${Config.apiBaseUrl}/api/CompliancePeriod`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-          })
-          .then(response => response.json())
-          .then(data => {          
-            if(data.statusCode === 200){
-              setShowPopup(true);
-              setmessage(data.message);              
-            }           
-              setTimeout(() => {
-              setShowPopup(false);
-              setShowLicenseData(false);
-              }, 4000);
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-        }
-        catch(error){
-          console.error("Post failed", error);
+      
+          const data = await response.json();
+          setSelectedLicenseData(data);
+      
+          setTimeout(() => {                       
+            setShowLicenseData(true);
+            setIsLoading(false);
+          }, 2000);
+        } catch (error) {
+          console.error('Error fetching data:', error);
           alert("Post failed: " + error.message);
         }
       };
-       
+      
+
+      const handlePost = async (e) => {
+        e.preventDefault();             
+        console.log(formData)   
+        const hasLastCompliancePeriod = selectedLicenseData && selectedLicenseData.length > 0 && selectedLicenseData[0].lastCompliancePeriod;     
+        if (hasLastCompliancePeriod && hasLastCompliancePeriod.startDate !== null) {
+          setHaslastCompliance(true);
+        }
+        if (!popupresponse) {
+          setFormData((prevState) => ({
+            ...prevState,
+            customerId: parseInt(sessionStorage.getItem('customerid')), 
+            licenseId: parseInt(selectedLicense),
+            standardId : parseInt(selectedStandard) ,
+            CanClosePrevCompliancePeriod: false
+          }));
+      
+          try {
+            const response = await fetch(`${Config.apiBaseUrl}/api/CompliancePeriod`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+      
+            const data = await response.json();
+            
+            if (response.ok && data.statusCode === 200) {
+              setShowPopup(true);
+              setmessage(data.message);              
+              setTimeout(() => {
+                setShowPopup(false);
+                setShowLicenseData(false);
+              }, 4000);
+            } else {
+              console.error('Error:', data);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert("Post failed: " + error.message);
+          }
+        }     
+      };
+             
       const renderDateOrPlaceholder = (date) => {
         if (date) {
             return formatDate(date);
         } else {
-            // Call your hook or perform any other action here
-            // For example, you can call a function that sets a state or performs some other action
-            // useStateSetter(); // Example of calling another hook
-            //setIsLastCompliancethereFalse();
             return "---";
         }
       };
@@ -147,17 +157,93 @@ const CreateCompliance = ({isOpen}) =>{
       };
 
       useEffect(() => { 
-        fetch(`${Config.apiBaseUrl}/api/LookUp/GetLicensesForCompliancePeriod?CustomerId=9`)
-          .then(response => response.json())
-          .then(data => setLicenses(data))
-          .catch(error => console.error('Error fetching data:', error));
-          console.log("licensesdata",licenses)
+        const fetchLicenses = async () => {
+          try {
+            const response = await fetch(`${Config.apiBaseUrl}/api/LookUp/GetLicensesForCompliancePeriod?CustomerId=${sessionStorage.getItem('customerid')}`);
+            
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+      
+            const data = await response.json();
+            setLicenses(data);
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        };
+      
+        fetchLicenses();
       }, []);
+      
 
+      const handlePostdata = async () => {
+        if (popupresponse) {
+          
+          // setFormData((prevState) => ({
+          //   ...prevState,         
+          //   customerId : parseInt(sessionStorage.getItem('customerid')), 
+          //   licenseId : parseInt(selectedLicense),                   
+          //   standardId : parseInt(selectedStandard),
+          //   CanClosePrevCompliancePeriod : true
+          // }));
+          // if(isOpenCreate){
+          //   setFormData((prevState) => ({
+          //     ...prevState,
+          //      CanClosePrevCompliancePeriod : true
+          //   }));
+          // }else{
+          //   setFormData((prevState) => ({
+          //     ...prevState,
+          //      CanClosePrevCompliancePeriod : false
+          //   }));
+          // }
+
+         console.log(formData)
+          try {
+            const response = await fetch(`${Config.apiBaseUrl}/api/CompliancePeriod`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+      
+            const data = await response.json();
+      
+            if (data.statusCode === 200) {
+              setShowPopup(true);
+              setmessage(data.message);
+              setTimeout(() => {
+                setShowPopup(false);
+                setShowLicenseData(false);
+              }, 4000);
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert("Post failed: " + error.message);
+          }
+        }
+      };
+      
       const toggleArrow = () => {
         setIsClickadd(!IsClickadd);       
-      };
+      };      
 
+    
+      const handlePopUp = (CanClosePrevCompliancePeriod) => { 
+        isOpenCreate = CanClosePrevCompliancePeriod;                 
+          setPopUpResponse(true);
+          setFormData((prevState) => ({
+            ...prevState,
+            customerId: parseInt(sessionStorage.getItem('customerid')), 
+            licenseId: parseInt(selectedLicense),                   
+            standardId: parseInt(selectedStandard),
+            CanClosePrevCompliancePeriod: isOpenCreate
+          }));
+          handlePostdata();  
+          setHaslastCompliance(false);
+      }
+       
       const toggleselected = () => {
         setSelectedItem(null);
       };
@@ -288,10 +374,20 @@ const CreateCompliance = ({isOpen}) =>{
             </div>
             )}
             {showPopuptoClosePrv && (
-            <div className="responsepopup">
+            <div className="lstresponsepopup">
               <p>Would you like to Close Previous compliance Period</p>
               <button className="okbuttonforresponse">OK</button>
             </div>
+            )}
+            {hasLastCompliane &&(
+              <div className="overlay">
+              <div className="lstresponsepopup" style={{height:'auto'}}>
+               <span style={{fontWeight:'490',marginTop:'10px',marginLeft:'10px'}}>You already have a compliance period that is Active. </span><br/>
+               <span style={{marginLeft:'25px',marginTop:'10px',fontSize:'20px'}}> Would you like to close the compliance <span style={{marginLeft:'30px'}}>Period and create new one.</span></span><br/>
+               <div style={{display:'flex',flexDirection:'row',marginTop:'10px'}}> <button  onClick={() => handlePopUp(true)} style={{width:'150px',backgroundColor:'black'}}>CLOSE & CREATE</button> <button  onClick={() => handlePopUp(false)}  style={{width:'150px',marginLeft:'45px',backgroundColor:'blue'}}>OPEN & CREATE</button></div>
+               <span style={{fontSize:'10px',marginTop:'5px'}}>Click (Keep Open will Make older Compliance Period Inactive )</span>
+              </div>
+              </div>
             )}
         </div>
     );

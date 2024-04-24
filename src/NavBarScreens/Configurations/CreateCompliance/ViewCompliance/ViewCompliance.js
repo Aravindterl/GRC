@@ -5,6 +5,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../../Config";
+import Nodata from "../../../../Nodata.jpg";
 
 const ViewCompliancePeriod = ({isOpen}) =>{
     const [IsClickadd, setIsClickadd] = useState(false);
@@ -18,6 +19,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
     //const [options, setOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState();
     const [showPopup, setShowPopup] = useState(false);
+
     const [message, setmessage] = useState('');
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -145,7 +147,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
       };
 
     useEffect(() => {
-        fetch(`${Config.apiBaseUrl}/api/CompliancePeriod?CustomerId=9`)
+        fetch(`${Config.apiBaseUrl}/api/CompliancePeriod?CustomerId=${parseInt(sessionStorage.getItem('customerid'))}`)
           .then(response => response.json())
           .then(data => setData(data.data),console.log(data))
           .catch(error => console.error('Error fetching data:', error));
@@ -173,7 +175,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
     return(
         <div className={`role ${isOpen ? 'open' : ''}`}>
             <div style={{flexDirection:'row',marginTop:'45px',marginLeft:'25px',height:'90px',backgroundColor:'#DEF5E5',borderRadius:'9px'}}>
-                <label style={{fontSize:'20px',fontWeight:'700',color:"red",marginLeft:'25px',marginTop:'10px'}}>View/Edit Compliance Period</label>
+                <label style={{fontSize:'20px',fontWeight:'700',color:"black",marginLeft:'25px',marginTop:'10px'}}>View/Edit Compliance Period</label>
                 <input
                       type="text"
                       placeholder="Search..."
@@ -182,7 +184,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
                       // onChange={handleInputChange}
                   />
             </div>
-            <div className="rolemastertable">
+            {currentItems.length !== 0 ?  <div className="rolemastertable">
                 <table>
                     <thead>
                     <tr>
@@ -200,7 +202,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
                         <td>{item.standardname}</td>
                         <td>{item.complStartDate}</td>
                         <td>{item.complEndDate}</td>
-                        <td>{item.metCompliance === true ? "Open" : "Close"}</td>
+                        <td>{item.isOpen === true ? "Open" : "Close"}</td>
                         <td>{item.isActive === true ? "Yes" : "No"}</td>
                         {/* <td>{item.disable}</td> */}
                         {/* <MdDeleteForever size={20} style={{cursor:'pointer',color:'red',marginLeft:'10px'}}  onClick={() => handleDelete(item.id)}/> */}
@@ -214,7 +216,7 @@ const ViewCompliancePeriod = ({isOpen}) =>{
                 <span style={{border:'1px solid black',borderRadius:'5px',padding:'5px'}}>{currentPage}</span>
                 <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastItem >= data.length} style={{width:'30px',backgroundColor:'transparent'}}><BiLastPage size={20} color="black"/></button>
             </div>
-            </div>
+            </div>: <div style={{display:'flex',alignContent:'center',justifyContent:'center',backgroundColor:'white'}}><img src={Nodata} style={{marginTop:'25px',marginLeft:'-39px',borderRadius:'10px'}}/></div>}
             
             {IsClickadd ? (<div className="popup" >
                 <form onSubmit={handleSubmit} >

@@ -16,12 +16,12 @@
     /* background-color: #61dafb; */
 }
 
-.assignaddnewrole{
-    width: 180px;
+.addnewrole{
+    width: 150px;
     background-color: #003300;
     height: 40px;
     border-radius: 9px;
-    margin-left: 650px;
+    margin-left: 700px;
     cursor: pointer;
     justify-content: center;
     align-items: center;
@@ -67,14 +67,13 @@ table {
     background-color: lightgrey;
   }
 
-.Assignrolemastertable{
+.rolemastertable{
   margin-left: 25px;
   width: 1140px;
   height: 390px;
   margin-top: 20px;
-  background-color: 	#F0F0F0;
+  background-color: #F8EDFF;
   border-radius: 8px;
- 
 }
 
 .popup {
@@ -87,8 +86,7 @@ table {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
+  }
 .popup-content {
   background-color: white;
   padding: 20px;
@@ -111,20 +109,15 @@ table {
   background-color: #0056b3;
 }  
 
-.assignformdiv{
-    width: 900px;
-    height: 500px; 
+.formdiv{
+    width: 700px;
+    height: 500px;
     background-color: white;
     display: flex;
     justify-content: center;
     /* align-items: center; */
     flex-direction: column;
     box-shadow:0 0 3px lightgray;
-    margin-left: 100px;
-    border-collapse:'collapse';
-    overflow-y: auto; 
-    flex-direction: column;
-  /* height: 100vh; */
     /* transform: translateY(20px);
     transition: transform 1.3s ease; */
 }

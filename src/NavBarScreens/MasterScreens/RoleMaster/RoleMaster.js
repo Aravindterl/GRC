@@ -5,8 +5,14 @@ import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../Config";
+import Alert from '@mui/material/Alert';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-notifications/lib/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import Nodata from "../../../Nodata.jpg";
 
-const RoleMaster = ({isOpen}) =>{
+const RoleMaster = ({isOpen}) => {
     const [IsClickadd, setIsClickadd] = useState(false);
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -27,18 +33,22 @@ const RoleMaster = ({isOpen}) =>{
         roleName: '',
         description: '',
         comments:'',        
-        createdBy:1,
+        createdBy:'',
         active:'',
-        CustomerId:10,
+        CustomerId:'',
       });
-    
+  
       const handleChange =(isEdit) => (e) => {
         const { name, value } = e.target;
+        let updatedValue = value;
+        if(name === "active"){
+          updatedValue = value === "true" ? true : false;
+        }
         if(isEdit){
             setEditedItem(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
             }
@@ -46,22 +56,31 @@ const RoleMaster = ({isOpen}) =>{
             setFormData(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
             }
       };
 
+      const notify = () => {{
+        NotificationManager.success('', message,2000);
+      }};
+
       const handleSubmit = async (e) => {
         e.preventDefault();
         setIsClickadd(false);
-        console.log(formData)
+        const AddingColumn = {
+          ...formData,
+          CustomerId: parseInt(sessionStorage.getItem('customerid')), // Modify this to your specific needs
+          createdBy : parseInt(sessionStorage.getItem('userid'))
+        }
+        console.log(AddingColumn)
         await fetch(`${Config.apiBaseUrl}/api/RoleMaster`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(AddingColumn)
         })
         .then(response => response.json())
         .then(data => {
@@ -70,7 +89,13 @@ const RoleMaster = ({isOpen}) =>{
 
           setTimeout(() => {
             setShowPopup(false);
-          }, 54000);
+            window.location.reload();
+          }, 4000);
+
+
+          if(showPopup){
+            notify();
+          }
           console.log('Success:', data.message);
         })
         .catch(error => {
@@ -82,7 +107,8 @@ const RoleMaster = ({isOpen}) =>{
 
         const editedItemWithExtraColumn = {
           ...editedItem,
-          CustomerId: '10' // Modify this to your specific needs
+          CustomerId: parseInt(sessionStorage.getItem('customerid')), // Modify this to your specific needs
+          createdBy : parseInt(sessionStorage.getItem('userid'))
         };
         console.log(editedItemWithExtraColumn)
 
@@ -162,12 +188,19 @@ const RoleMaster = ({isOpen}) =>{
       };
       const togglepopup = () => {
         setShowPopup(false);
+        window.location.reload();
       };
+
+      useEffect(() => {
+        if (showPopup) {
+            notify();
+        }
+    }, [showPopup]);
      
     return(
         <div className={`role ${isOpen ? 'open' : ''}`}>
             <div style={{flexDirection:'row',marginTop:'45px',marginLeft:'25px',height:'90px',backgroundColor:'#DEF5E5',borderRadius:'9px'}}>
-                <label style={{fontSize:'20px',fontWeight:'700',color:"red",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'purple'}}>Role</span></label>
+                <label style={{fontSize:'20px',fontWeight:'700',color:"black",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'black'}}>Role</span></label>
                 <input
                         type="text"
                         placeholder="Search..."
@@ -177,7 +210,7 @@ const RoleMaster = ({isOpen}) =>{
                     />
                 <div className="addnewrole" onClick={toggleArrow}><label style={{fontSize:'15px',color:'white',cursor:'pointer'}}>+ Add New Role</label></div>
             </div>
-            <div className="rolemastertable">
+            {currentItems.length !== 0 ?   <div className="rolemastertable">
                 <table style={{marginLeft:'90px'}}>
                     <thead>
                     <tr>                        
@@ -194,7 +227,7 @@ const RoleMaster = ({isOpen}) =>{
                         <td>{item.roleName}</td>
                         <td>{item.description}</td>
                         <td>{item.comments}</td>
-                        <td>{item.active}</td>
+                        <td>{item.active === true ? "Yes" : "No"}</td>
                         <td><FiEdit onClick={() => handleEdit(item)} size={15} style={{cursor:'pointer',marginRight:'10px',marginLeft:'10px'}}/>   <MdDeleteForever size={20} style={{cursor:'pointer',color:'red',marginLeft:'10px'}}  onClick={() => handleDelete(item.sysRoleId)}/></td>
                         </tr>
                     ))}
@@ -205,7 +238,7 @@ const RoleMaster = ({isOpen}) =>{
                     <span style={{border:'1px solid black',borderRadius:'5px',padding:'5px'}}>{currentPage}</span>
                 <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastItem >= data.length} style={{width:'30px',backgroundColor:'transparent'}}><BiLastPage size={20} color="black"/></button>
             </div>
-            </div>
+            </div>: <div style={{display:'flex',alignContent:'center',justifyContent:'center',backgroundColor:'white'}}><img src={Nodata} style={{marginTop:'25px',marginLeft:'-39px',borderRadius:'10px'}}/></div>}
             
             {IsClickadd ? (<div className="popup" >
                 <form onSubmit={handleSubmit} >
@@ -242,10 +275,10 @@ const RoleMaster = ({isOpen}) =>{
                             <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'100px',fontSize:'17px',fontWeight:'700'}}> Disable :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="Y" style={{marginLeft:'140px'}} onChange={handleChange(false)}/>YES
+                                    <input type="radio" name="active" value="true" style={{marginLeft:'140px'}} onChange={handleChange(false)}/>YES
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="N" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>NO
+                                    <input type="radio" name="active" value="false" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>NO
                                 </label>
                             </div>
                         <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'270px'}}>Submit</button>
@@ -291,10 +324,10 @@ const RoleMaster = ({isOpen}) =>{
                             <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'100px',fontSize:'17px',fontWeight:'700'}}> Disable :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="Y" checked={editedItem.active === 'Y'} style={{marginLeft:'140px'}} onChange={handleChange(true)}/>YES
+                                    <input type="radio" name="active" value="true" checked={editedItem.active === true} style={{marginLeft:'140px'}} onChange={handleChange(true)}/>YES
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="active" value="N" checked={editedItem.active === 'N'} style={{marginLeft:'30px'}} onChange={handleChange(true)}/>NO
+                                    <input type="radio" name="active" value="false" checked={editedItem.active === false} style={{marginLeft:'30px'}} onChange={handleChange(true)}/>NO
                                 </label>
                             </div>
                         <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'270px'}}>Submit</button>
@@ -302,11 +335,15 @@ const RoleMaster = ({isOpen}) =>{
                 </form>
             </div>)}
             {showPopup && (
-            <div className="responsepopup">
-              <p>{message}</p>
-              <button className="okbuttonforresponse" onClick={togglepopup}>OK</button>
-            </div>
+            // <div className="responsepopup">
+            //   {/* <p>{message}</p> */}
+            //   <button className="okbuttonforresponse" onClick={togglepopup}>OK</button>
+            // </div>
+            <NotificationContainer/>
             )}
+             {/* <button onClick={notify}>Notify!</button> */}
+            {/* <ToastContainer style={{width:'300px'}}/> */}
+             
         </div>
     );
 };

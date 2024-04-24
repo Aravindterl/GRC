@@ -36,14 +36,14 @@ const LicenseManagement = ({isOpen}) =>{
     const filteredItems = data.filter(item =>
         item.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.governance.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       item.startOrRenewalDate.toLowerCase().includes(searchQuery.toLowerCase()) ||        
+        item.startOrRenewalDate.toLowerCase().includes(searchQuery.toLowerCase()) ||        
         item.standardName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.endDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (item.country && item.country.toLowerCase().includes(searchQuery.toLowerCase()))
-        );
+      );
 
      const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
-    const paginate = pageNumber => setCurrentPage(pageNumber);
+     const paginate = pageNumber => setCurrentPage(pageNumber);
 
     const [formData, setFormData] = useState({
         startOrRenewalDate: '',
@@ -58,7 +58,7 @@ const LicenseManagement = ({isOpen}) =>{
         approved: false,
         isActive:true
       });
-    //   = (name) => (e) => 
+    //= (name) => (e) => 
       const handleChange =(isEdit) => (e) => {
         const { name, value } = e.target;
         let updatedValue = value;

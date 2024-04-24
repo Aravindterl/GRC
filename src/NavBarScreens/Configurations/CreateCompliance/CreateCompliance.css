@@ -39,3 +39,50 @@
     width: 1000px;
     /* Styles for the form */
 }
+
+.lstresponsepopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 110px;
+    background-color: azure;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
+    z-index: 1000;
+    display: flex;
+    justify-content:center ;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .popup-container {
+    position: fixed; /* Positioning the popup relative to the viewport */
+    top: 50%;
+    left: 50%;
+    height: 110px;
+    transform: translate(-50%, -50%); /* Center the popup */
+    width: 40%; /* Width of the popup */
+    background-color: white; /* Background color */
+    padding: 20px; /* Padding around the content */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
+    z-index: 1000; /* Ensures the popup is above other content */
+  }
+  
+  
+  .lstresponsepopup p {
+    margin: 0;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 999; /* Below the popup but above other content */
+  }

@@ -5,6 +5,9 @@ import { MdDeleteForever } from "react-icons/md";
 import { BiFirstPage , BiLastPage } from "react-icons/bi";
 import { RxCross2 } from "react-icons/rx";
 import Config from "../../../Config";
+import 'react-notifications/lib/notifications.css';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import Nodata from "../../../Nodata.jpg";
 
 const UserMaster = ({isOpen}) =>{
     const [IsClickadd, setIsClickadd] = useState(false);
@@ -29,20 +32,35 @@ const UserMaster = ({isOpen}) =>{
     const [formData, setFormData] = useState({
         cliRoleId: 0,
         name: '',
-        email:'',
-        phoneNo:'',
-        customerId:1,
-        createdBy:1,
+        email:'',      
+        customerId: '' ,
+        createdBy:'',
         status:''
       });
+
+      // {
+      //   "name": "string",
+      //   "email": "string",
+      //   "customerId": 0,
+      //   "cliRoleId": 0,
+      //   "status": true,
+      //   "createdBy": 0
+        
+        
+      // }
+
     //   = (name) => (e) => 
       const handleChange =(isEdit) => (e) => {
         const { name, value } = e.target;
+        let updatedValue = value;
+        if(name === "status"){
+          updatedValue = value === "true" ? true : false;
+        }
         if(isEdit){
             setEditedItem(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
         }
@@ -50,7 +68,7 @@ const UserMaster = ({isOpen}) =>{
             setFormData(prevState => {
                 return {
                   ...prevState,
-                  [name]: value
+                  [name]: updatedValue
                 };
               });
         }
@@ -80,7 +98,12 @@ const UserMaster = ({isOpen}) =>{
 
       const handleSubmit = (e) => {
         e.preventDefault();
-        setIsClickadd(false);
+        setIsClickadd(false);      
+        setFormData(prevState => ({
+          ...prevState,         
+          customerId: parseInt(sessionStorage.getItem('customerid')), 
+          createdBy: parseInt(sessionStorage.getItem('userId')) 
+        }));
         console.log(formData)
         fetch(`${Config.apiBaseUrl}/api/UserMaster`, {
           method: 'POST',
@@ -105,6 +128,11 @@ const UserMaster = ({isOpen}) =>{
 
       const handleSave = () => {
         console.log(editedItem)
+        setEditedItem(prevState => ({
+          ...prevState,         
+          customerId: parseInt(sessionStorage.getItem('customerid')) 
+          // createdBy: parseInt(sessionStorage.getItem('userId')) 
+        }));
         fetch(`${Config.apiBaseUrl}/api/UserMaster?Userid=${editedItem.id}`, {
           method: 'PUT',
           headers: {
@@ -170,10 +198,20 @@ const UserMaster = ({isOpen}) =>{
         setShowPopup(false);
       };
      
+      const notify = () => {{
+        NotificationManager.success('', message,2000);
+      }};
+
+      useEffect(() => {
+        if (showPopup) {
+            notify();
+        }
+    }, [showPopup]);
+
     return(
         <div className={`role ${isOpen ? 'open' : ''}`}>
             <div style={{flexDirection:'row',marginTop:'45px',marginLeft:'25px',height:'90px',backgroundColor:'#DEF5E5',borderRadius:'9px'}}>
-                <label style={{fontSize:'20px',fontWeight:'700',color:"red",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'purple'}}>User</span></label>
+                <label style={{fontSize:'20px',fontWeight:'700',color:"black",marginLeft:'25px',marginTop:'10px'}}>Masters/<span style={{color:'black'}}>User</span></label>
                 <input
                         type="text"
                         placeholder="Search..."
@@ -183,13 +221,13 @@ const UserMaster = ({isOpen}) =>{
                     />
                 <div className="addnewrole" onClick={toggleArrow}><label style={{fontSize:'15px',color:'white',cursor:'pointer'}}>+ Add New User</label></div>
             </div>
-            <div className="rolemastertable">
-                <table>
+            {currentItems.length !== 0 ?   <div className="rolemastertable">
+                <table style={{marginLeft:'120px'}}>
                     <thead>
                     <tr>
                         <th>Name</th>
                         <th style={{width:'200px'}}>Email</th>
-                        <th>PhoneNo</th>
+                        {/* <th>PhoneNo</th> */}
                         <th>Role</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -200,9 +238,9 @@ const UserMaster = ({isOpen}) =>{
                         <tr key={item.id}>
                         <td>{item.name}</td>
                         <td>{item.email}</td>
-                        <td>{item.phoneNo}</td>
+                        {/* <td>{item.phoneNo}</td> */}
                         <td>{item.role}</td>
-                        <td>{item.status}</td>
+                        <td>{item.status === true ? "Active" : "InActive"}</td>
                         {/* <td>{item.disable}</td> */}
                         <td><FiEdit onClick={() => handleEdit(item)} size={15} style={{cursor:'pointer',marginRight:'10px',marginLeft:'10px'}}/>   <MdDeleteForever size={20} style={{cursor:'pointer',color:'red',marginLeft:'10px'}}  onClick={() => handleDelete(item.id)}/></td>
                         </tr>
@@ -214,7 +252,7 @@ const UserMaster = ({isOpen}) =>{
                 <span style={{border:'1px solid black',borderRadius:'5px',padding:'5px'}}>{currentPage}</span>
                 <button onClick={() => paginate(currentPage + 1)} disabled={indexOfLastItem >= data.length} style={{width:'30px',backgroundColor:'transparent'}}><BiLastPage size={20} color="black"/></button>
             </div>
-            </div>
+            </div>: <div style={{display:'flex',alignContent:'center',justifyContent:'center',backgroundColor:'white'}}><img src={Nodata} style={{marginTop:'25px',marginLeft:'-39px',borderRadius:'10px'}}/></div>}
             
             {IsClickadd ? (<div className="popup" >
                 <form onSubmit={handleSubmit} >
@@ -255,22 +293,13 @@ const UserMaster = ({isOpen}) =>{
                                 onChange={handleChange(false)}
                                 />
                             </div>
-                            <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
-                                <h5 style={{marginLeft:'100px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>PhoneNo :</h5>
-                                <input type="number"
-                                placeholder="Phone"
-                                style={{width:'200px',height:'30px',marginLeft:'60px'}}
-                                name="phoneNo"
-                                onChange={handleChange(false)}
-                                />
-                            </div>
                             <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'100px',fontSize:'17px',fontWeight:'700'}}> Status :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="status" value="Y" style={{marginLeft:'140px'}} onChange={handleChange(false)}/>Active
+                                    <input type="radio" name="status" value='true' style={{marginLeft:'140px'}} onChange={handleChange(false)}/>Active
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="status" value="N" style={{marginLeft:'30px'}} onChange={handleChange(false)}/>Inactive
+                                    <input type="radio" name="status" value='false' style={{marginLeft:'30px'}} onChange={handleChange(false)}/>Inactive
                                 </label>
                             </div>
                         <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'270px'}}>Submit</button>
@@ -287,12 +316,12 @@ const UserMaster = ({isOpen}) =>{
                                 // placeholder=""
                                 style={{width:'220px',height:'40px',borderBlockColor:'green',borderRadius:'5px',marginLeft:'100px',padding:'1px'}}
                                 name="cliRoleId"
-                                value={editedItem.cliRoleId} 
+                                value={editedItem.role} 
                                 onChange={handleChangefordropdown(true)}
                                 >
                                 <option value="">Select Role</option>
                                 {roleData.map(option => (
-                                    <option key={option.cliRoleId} value={option.cliRoleId}>{option.roleName}</option>
+                                    <option key={option.clientRoleId} value={option.clientRoleId}>{option.roleName}</option>
                                   ))}
                               </select>
                                 {errors.name && <span className="error">{errors.name}</span>}
@@ -318,23 +347,14 @@ const UserMaster = ({isOpen}) =>{
                                 readOnly
                                 />
                             </div>
-                            <div style={{display:'flex',flexDirection:'row',marginTop:'5px'}}>
-                                <h5 style={{marginLeft:'100px',fontFamily:'sans-serif',fontSize:'15px',marginTop:'5px'}}>PhoneNo :</h5>
-                                <input type="text"
-                                placeholder="PhoneNo"
-                                style={{width:'200px',height:'30px',marginLeft:'60px'}}
-                                name="phoneNo"
-                                onChange={handleChange(true)}
-                                value={editedItem.phoneNo}
-                                />
-                            </div>
+
                             <div style={{display: 'inline-flex'}}>
                                 <label style={{marginLeft:'100px',fontSize:'17px',fontWeight:'700'}}> Status :</label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="status" value="Y" checked={editedItem.status === 'Y'}  style={{marginLeft:'140px'}} onChange={handleChange(true)}/>Active
+                                    <input type="radio" name="status" value="Y" checked={editedItem.status === true}  style={{marginLeft:'140px'}} onChange={handleChange(true)}/>Active
                                 </label>
                                 <label style={{display: 'inline-flex'}}> 
-                                    <input type="radio" name="status" value="N" checked={editedItem.status === 'N'} style={{marginLeft:'30px'}} onChange={handleChange(true)}/>Inactive
+                                    <input type="radio" name="status" value="N" checked={editedItem.status === false} style={{marginLeft:'30px'}} onChange={handleChange(true)}/>Inactive
                                 </label>
                             </div>
                         <button type="submit" className="submitbutn" style={{backgroundColor:'#003300',marginLeft:'270px'}}>Submit</button>
@@ -343,10 +363,7 @@ const UserMaster = ({isOpen}) =>{
             </div>)}
 
             {showPopup && (
-            <div className="responsepopup">
-              <p>{message}</p>
-              <button className="okbuttonforresponse" onClick={togglepopup}>OK</button>
-            </div>
+             <NotificationContainer/>
             )}
         </div>
     );
